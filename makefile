@@ -1,11 +1,9 @@
 #ODB.
 objects  = test.o
 objects += mod.o
-objects += Logger_c.o
 objects += Log_c.o
 
-headers  = Logger_c.h
-headers += Log_c.h
+headers  = Log_c.h
 
 options = 
 

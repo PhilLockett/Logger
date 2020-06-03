@@ -24,10 +24,65 @@
 #if !defined(_LOG_C_H__201130_1555__INCLUDED_)
 #define _LOG_C_H__201130_1555__INCLUDED_
 
-#include "Logger_c.h"
+#include <stdlib.h>
+#include <string>
+#include <vector>
+
+#include <cstdarg>
 
 using namespace std;
 
+
+/**
+ * @section Logging Singleton.
+ *
+ * Implementation of the Logging Singleton. This code does the work of
+ * formatting log entries, buffering them and writing them to the log file.
+ */
+
+class Logger_c
+{
+public:
+    static Logger_c* getInstance();
+
+    int log(const char* qualifier, const char* format, va_list argptr);
+    int flush(void);
+
+    bool setLogFilePath(const string & path);
+    const string & getLogFilePath(void) { return instance->logFilePath; }
+    void enableTimestamp(bool enable) { instance->timestamp = enable; }
+
+private:
+//- Hide the default constructor, destructor, copy constructor and assignement operator.
+    Logger_c(void) : error(0), count(0) {}
+    virtual ~Logger_c(void) { flush(); }
+    Logger_c(Logger_c const&);
+    void operator=(Logger_c const&);
+
+    bool cacheLine(const char* qualifier, const char* format, va_list argptr);
+
+    static Logger_c* instance;
+
+    int error;
+    static const int FILE_NAME_SIZE;
+    static const int LINE_LENGTH;   // Maximum length of each Line.
+    static const int LINE_COUNT;    // Maximum Number of Lines in the Buffer.
+    vector<string> cache;
+    int count;                      // Current Number of Lines in the Buffer.
+    string logFilePath;
+    bool timestamp = true;
+
+};
+
+
+/**
+ * @section Logging referencer.
+ *
+ * This is the user interface implemented as a facade.
+ *
+ * This code holds a local reference to the logging singleton, the module name
+ * and the current log level setting.
+ */
 class Log_c
 {
 public:
