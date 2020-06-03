@@ -21,11 +21,10 @@
  * Unit test code for the Logging Implementation.
  *
  * Build using:
- *    g++ -c -o Logger_c.o Logger_c.cpp
  *    g++ -c -o Log_c.o Log_c.cpp
  *    g++ -c -o test.o test.cpp
- *    g++ -c -o mod.o mod.cpp
- *    g++ -o test test.o mod.o Logger_c.o Log_c.o 
+ *    g++ -c -o test2.o test2.cpp
+ *    g++ -o test test.o test2.o Log_c.o 
  *
  * Test using:
  *    ./test

@@ -1,5 +1,5 @@
 /**
- * @file    mod.cpp
+ * @file    test2.cpp
  * @author  Phil Lockett <phillockett65@gmail.com>
  * @version 1.0
  *

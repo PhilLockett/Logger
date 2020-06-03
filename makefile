@@ -1,6 +1,6 @@
-#ODB.
+# Makefile for Logger unit tests.
 objects  = test.o
-objects += mod.o
+objects += test2.o
 objects += Log_c.o
 
 headers  = Log_c.h

@@ -267,7 +267,6 @@ int Log_c::printf(int level, const char* format, ...)
 //    send the same messages again
 //
 // Build using:
-//    g++ -c -o Logger_c.o Logger_c.cpp
 //    g++ -c -o Log_c.o Log_c.cpp
 //    g++ -o test Logger_c.o Log_c.o 
 //
