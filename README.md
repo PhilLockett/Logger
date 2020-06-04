@@ -1,6 +1,6 @@
 # Log_c - A simple implementation of a logger implemented as a singleton.
 
-## Introduction
+## Overview
 
 This is a simple logger implemented as a singleton with a façade interface. 
 All log entries are sent to the same log file. The default log path is 
