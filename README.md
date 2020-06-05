@@ -1,8 +1,13 @@
 # Log_c
 
-A simple implementation of a logger implemented as a singleton.
+A simple logger implemented as a singleton.
 
 ## Overview
+
+A logger collects together system wide messages, useful in a real time 
+environment. It should also allow for logging levels to be easily adjusted so 
+that more granular messages from specific modules can be obtained to 
+facilitate debugging.
 
 This is a simple logger implemented as a singleton with a façade interface. 
 All log entries are sent to the same log file. The default log path is 
@@ -19,3 +24,22 @@ The logger code is wholly contained in the files 'Log_c.cpp' and 'Log_c.h'.
 All other files are to support the unit test code. The code is liberally 
 commented. The test code exercises most of the API and illustrates the usage.
 
+## Cloning and Running
+
+To clone, buikd and run this code, execute the following unix/linux commands:
+
+  1. git clone https://github.com/PhilLockett/Logger.git
+  2. cd Logger/
+  3. make
+  4. ./test
+
+## Points of interest
+
+This code has the following points of interest:
+
+  * The main logger code (Logger_c) is implemented as a singleton.
+  * The API (Log_c) is implemented as a façade.
+  * The API hides the pointer to the logger instance.
+  * The API maintains the modules name and logging level.
+  * The log file path can easily be modified as needed.
+  * Timestamps can be suppressed for before and after log file comparison.
