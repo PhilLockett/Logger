@@ -26,7 +26,7 @@ commented. The test code exercises most of the API and illustrates the usage.
 
 ## Cloning and Running
 
-To clone, buikd and run this code, execute the following unix/linux commands:
+To clone, build and run this code, execute the following unix/linux commands:
 
   1. git clone https://github.com/PhilLockett/Logger.git
   2. cd Logger/
