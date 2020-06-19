@@ -1,5 +1,6 @@
 /**
- * @file    Log_c.h * @author  Phil Lockett <phillockett65@gmail.com>
+ * @file    Log_c.h
+ * @author  Phil Lockett <phillockett65@gmail.com>
  * @version 1.0
  *
  * @section LICENSE
