@@ -46,7 +46,6 @@ extern int remoteFunction(int level);
  * log and a log stream local to this function.
  *
  * @param  level - set the logging level for bob.
- * @return error value or 0 if no errors.
  */
 void localFunction(const int level)
 {
