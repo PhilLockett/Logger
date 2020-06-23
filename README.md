@@ -48,4 +48,4 @@ This code has the following points of interest:
   * The API hides the pointer to the logger instance.
   * The API maintains the modules name and logging level.
   * The log file path can easily be modified as needed.
-  * Timestamps can be suppressed for before and after log file comparison.
+  * Timestamps can be suppressed for 'before and after' log file comparison.
