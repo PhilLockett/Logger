@@ -28,10 +28,16 @@ commented. The test code exercises most of the API and illustrates the usage.
 
 To clone, build and run this code, execute the following unix/linux commands:
 
-  1. git clone https://github.com/PhilLockett/Logger.git
-  2. cd Logger/
-  3. make
-  4. ./test
+    git clone https://github.com/PhilLockett/Logger.git
+    cd Logger/
+    make
+    ./test
+
+The initial logging level for 'test.cpp' can be set from the command line, 
+but the test code does set the logging level to 5 half way through testing.
+Example of setting the initial logging level for 'test.cpp' to the maximum:
+
+    ./test 9
 
 ## Points of interest
 
