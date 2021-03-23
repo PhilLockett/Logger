@@ -78,6 +78,10 @@ void localFunction(const int level)
  */
 int main(int argc, char *argv[])
 {
+//- Initialize testing set up.
+	log.setLogFilePath("logs");
+	log.enableTimestamp(false);
+
 //- Overide default log level from command line. Set the log level to a
 //  larger value for more verbose log entries.
     if (argc > 1)
