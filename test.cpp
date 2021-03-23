@@ -54,7 +54,7 @@ void localFunction(const int level)
 
 //- Test a second logger. This is for illustration and usually not necessary.
     Log_c bob("Bob", level);
-	std::cout << "Logging level for bob(\"Bob\") set to " << level << std::endl;
+	std::cout << "Logging level for bob(\"Bob\") set to " << level << '\n';
 
 //- Do some work.
     log.printf(1, "Logging level set to %d.", log.getLogLevel());
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
         if ((Log_c::isLogLevelValid(lvl)) && (lvl != ERROR))
         {
             log.setLogLevel(lvl);
-            std::cout << "Logging level for log(\"" __FILE__ "\") changed to " << lvl << std::endl;
+            std::cout << "Logging level for log(\"" __FILE__ "\") changed to " << lvl << '\n';
         }
     }
 
@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
 //- For testing purposes change logging level. Typically you would not change
 //  the log levels after initialisation.
     log.setLogLevel(5);
-    std::cout << "Logging level for log(\"" __FILE__ "\") changed to " << 5 << std::endl;
+    std::cout << "Logging level for log(\"" __FILE__ "\") changed to " << 5 << '\n';
 
 //- Do some more work.
     localFunction(4);
@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
 
     log.flush();
 
-    std::cout << "Check results in " << log.getLogFilePath() << std::endl;
+    std::cout << "Check results in " << log.getLogFilePath() << '\n';
 
     return 0;
 }

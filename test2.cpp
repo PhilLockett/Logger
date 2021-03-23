@@ -42,7 +42,7 @@ int remoteFunction(int level)
     if (level != MAJOR)
     {
         log.setLogLevel(level);
-        std::cout << "Logging level for log(\"" __FILE__ "\") changed to " << level << std::endl;
+        std::cout << "Logging level for log(\"" __FILE__ "\") changed to " << level << '\n';
     }
 
 //- Debug tracking.
