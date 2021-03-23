@@ -5,7 +5,7 @@ objects += Log_c.o
 
 headers  = Log_c.h
 
-options = 
+options = -std=c++20
 
 test:	$(objects)	$(headers)
 	g++ $(options) -o test $(objects)
