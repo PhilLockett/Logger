@@ -43,22 +43,10 @@ using namespace std;
 
 class Logger_c
 {
-public:
-    static Logger_c* getInstance();
-
-    int log(const char* qualifier, const char* format, va_list argptr);
-    int flush(void);
-
-    bool setLogFilePath(const string & path);
-    const string & getLogFilePath(void) { return instance->logFilePath; }
-    void enableTimestamp(bool enable) { instance->timestamp = enable; }
-
 private:
-//- Hide the default constructor, destructor, copy constructor and assignement operator.
+//- Hide the default constructor and destructor.
     Logger_c(void) : error(0), count(0) {}
     virtual ~Logger_c(void) { flush(); }
-    Logger_c(Logger_c const&);
-    void operator=(Logger_c const&);
 
     bool cacheLine(const char* qualifier, const char* format, va_list argptr);
 
@@ -72,6 +60,20 @@ private:
     int count;                      // Current Number of Lines in the Buffer.
     string logFilePath;
     bool timestamp = true;
+
+public:
+//- Delete the copy constructor and assignement operator.
+    Logger_c(const Logger_c &) = delete;
+    void operator=(const Logger_c &) = delete;
+
+    static Logger_c* getInstance();
+
+    int log(const char* qualifier, const char* format, va_list argptr);
+    int flush(void);
+
+    bool setLogFilePath(const string & path);
+    const string & getLogFilePath(void) { return instance->logFilePath; }
+    void enableTimestamp(bool enable) { instance->timestamp = enable; }
 
 };
 
