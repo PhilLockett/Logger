@@ -31,7 +31,6 @@
 
 #include <cstdarg>
 
-using namespace std;
 
 
 /**
@@ -56,9 +55,9 @@ private:
     static const int FILE_NAME_SIZE;
     static const int LINE_LENGTH;   // Maximum length of each Line.
     static const int LINE_COUNT;    // Maximum Number of Lines in the Buffer.
-    vector<string> cache;
+    std::vector<std::string> cache;
     int count;                      // Current Number of Lines in the Buffer.
-    string logFilePath;
+    std::string logFilePath;
     bool timestamp = true;
 
 public:
@@ -71,8 +70,8 @@ public:
     int log(const char* qualifier, const char* format, va_list argptr);
     int flush(void);
 
-    bool setLogFilePath(const string & path);
-    const string & getLogFilePath(void) { return instance->logFilePath; }
+    bool setLogFilePath(const std::string & path);
+    const std::string & getLogFilePath(void) { return instance->logFilePath; }
     void enableTimestamp(bool enable) { instance->timestamp = enable; }
 
 };
@@ -102,8 +101,8 @@ public:
     int getLogLevel(void) const { return logLevel; }
     void setLogLevel(int V) { logLevel = V; }
 
-    const string & getLogFilePath(void) { return loggerRef->getLogFilePath(); }
-    bool setLogFilePath(const string & path) { return loggerRef->setLogFilePath(path); }
+    const std::string & getLogFilePath(void) { return loggerRef->getLogFilePath(); }
+    bool setLogFilePath(const std::string & path) { return loggerRef->setLogFilePath(path); }
     void enableTimestamp(bool enable) { loggerRef->enableTimestamp(enable); }
 
 

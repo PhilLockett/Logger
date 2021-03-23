@@ -106,10 +106,10 @@ int Logger_c::flush(void)
     sprintf(FileName, "%s/log-%04d-%02d-%02d.txt", instance->logFilePath.c_str(), tim.tm_year + 1900, tim.tm_mon + 1, tim.tm_mday);
 
 //- Copy the buffer to the log file.
-    ofstream outfile(FileName, ofstream::out | ofstream::app);
-    for (vector<string>::iterator ii = instance->cache.begin(); ii != instance->cache.end(); ++ii)
+    std::ofstream outfile(FileName, std::ofstream::out | std::ofstream::app);
+    for (std::vector<std::string>::iterator ii = instance->cache.begin(); ii != instance->cache.end(); ++ii)
     {
-        outfile << (*ii) << endl;
+        outfile << (*ii) << '\n';
     }
 
 //- Clear the buffer.
@@ -125,7 +125,7 @@ int Logger_c::flush(void)
  *
  * @return true if successful, false otherwise.
  */
-bool Logger_c::setLogFilePath(const string & path)
+bool Logger_c::setLogFilePath(const std::string & path)
 {
 //- Save the new path and Strip off trailing '/' if present.
     const size_t filePathLen = path.length();
