@@ -39,39 +39,53 @@
 #include "unittest.h"
 
 
-#define ERROR 3
+#define MAJOR    2
+#define ERROR    3
+#define WARNING  4
+#define NOTICE   5
+#define INFO     6
+#define DEBUG    7
+#define VERBOSE  8
 
 static Log_c log(__FILE__, ERROR);     // Only log serious messages.
 
-extern int remoteFunction(int level);
+extern int remoteFunction(int level = MAJOR);
 
-/**
- * Dummy local function to test Logging Implementation. Test both the module's
- * log and a log stream local to this function.
- *
- * @param  level - set the logging level for bob.
- */
-void localFunction(const int level)
-{
-//- Debug tracking.
-    log.printf(7, "test::func() called.");
 
-//- Test a second logger. This is for illustration and usually not necessary.
-    Log_c bob("Bob", level);
-    std::cout << "Logging level for bob(\"Bob\") set to " << level << '\n';
+UNIT_TEST(test0, "Test sending log entries using global log reference.")
 
-//- Do some work.
-    log.printf(1, "Logging level set to %d.", log.getLogLevel());
-    bob.printf(1, "Logging level set to %d.", bob.getLogLevel());
-    log.printf(3, "Logging level set to %d.", log.getLogLevel());
-    bob.printf(3, "Logging level set to %d.", bob.getLogLevel());
-    log.printf(5, "Logging level set to %d.", log.getLogLevel());
-    bob.printf(5, "Logging level set to %d.", bob.getLogLevel());
-    log.printf(7, "Logging level set to %d.", log.getLogLevel());
-    bob.printf(7, "Logging level set to %d.", bob.getLogLevel());
+    for (int loggingLevel = 1; loggingLevel < Log_c::MAX_LOG_LEVEL; ++loggingLevel)
+        log.printf(loggingLevel, "Logging level set to %d.", log.getLogLevel());
 
-    bob.flush();
-}
+NEXT_CASE(test1, "Test sending log entries using local log reference.")
+
+    Log_c bob("Bob", DEBUG);	// Make Bob chatty.
+    for (int loggingLevel = 1; loggingLevel < Log_c::MAX_LOG_LEVEL; ++loggingLevel)
+        bob.printf(loggingLevel, "Logging level set to %d.", bob.getLogLevel());
+
+NEXT_CASE(test2, "Test sending log entries from remote code.")
+
+    remoteFunction();   // Call test module.
+
+NEXT_CASE(test3, "Test changing logging level.")
+
+    log.setLogLevel(INFO);
+    for (int loggingLevel = 1; loggingLevel < Log_c::MAX_LOG_LEVEL; ++loggingLevel)
+        log.printf(loggingLevel, "Logging level set to %d.", log.getLogLevel());
+
+NEXT_CASE(test4, "Test interleaving log entries.")
+
+    for (int loggingLevel = 1; loggingLevel < Log_c::MAX_LOG_LEVEL; ++loggingLevel)
+    {
+        log.printf(loggingLevel, "Logging level set to %d.", log.getLogLevel());
+        bob.printf(loggingLevel, "Logging level set to %d.", bob.getLogLevel());
+    }
+
+NEXT_CASE(test2, "Test sending verbose log entries from remote code.")
+
+    remoteFunction(VERBOSE);   // Call test module.
+
+END_TEST
 
 int runTests(void)
 {
@@ -80,21 +94,10 @@ int runTests(void)
     log.setLogFilePath("logs");
     log.enableTimestamp(false);
 
-//- Debug tracking.
-    log.printf(7, "main() called.");
+    std::cout << "Executing all tests.\n";
+//	  VERBOSE_OFF
 
-//- Do some work.
-    localFunction(6);
-    remoteFunction(2);   // Call test module with same initial log level.
-
-//- For testing purposes change logging level. Typically you would not change
-//  the log levels after initialisation.
-    log.setLogLevel(5);
-    std::cout << "Logging level for log(\"" __FILE__ "\") changed to " << 5 << '\n';
-
-//- Do some more work.
-    localFunction(4);
-    remoteFunction(7);   // Call test module with verbose log level.
+    RUN_TEST(test0)
 
     log.flush();
 
