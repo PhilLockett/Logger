@@ -36,6 +36,9 @@
 
 #include "Log_c.h"
 
+#include "unittest.h"
+
+
 #define ERROR 3
 
 static Log_c log(__FILE__, ERROR);     // Only log serious messages.
@@ -55,7 +58,7 @@ void localFunction(const int level)
 
 //- Test a second logger. This is for illustration and usually not necessary.
     Log_c bob("Bob", level);
-	std::cout << "Logging level for bob(\"Bob\") set to " << level << '\n';
+    std::cout << "Logging level for bob(\"Bob\") set to " << level << '\n';
 
 //- Do some work.
     log.printf(1, "Logging level set to %d.", log.getLogLevel());
@@ -70,31 +73,12 @@ void localFunction(const int level)
     bob.flush();
 }
 
-/**
- * Test system entry point.
- *
- * @param  argc - command line argument count.
- * @param  argv - command line argument vector.
- * @return error value or 0 if no errors.
- */
-int main(int argc, char *argv[])
+int runTests(void)
 {
 //- Initialize test set up.
     std::filesystem::remove_all("logs"); // Delete directory and contents.
     log.setLogFilePath("logs");
     log.enableTimestamp(false);
-
-//- Overide default log level from command line. Set the log level to a
-//  larger value for more verbose log entries.
-    if (argc > 1)
-    {
-        const int lvl = atoi(argv[1]);
-        if ((Log_c::isLogLevelValid(lvl)) && (lvl != ERROR))
-        {
-            log.setLogLevel(lvl);
-            std::cout << "Logging level for log(\"" __FILE__ "\") changed to " << lvl << '\n';
-        }
-    }
 
 //- Debug tracking.
     log.printf(7, "main() called.");
@@ -116,6 +100,24 @@ int main(int argc, char *argv[])
 
     std::cout << "Check results in " << log.getLogFilePath() << '\n';
 
-    return 0;
+    const int err = ERROR_COUNT;
+    if (err)
+        std::cerr << err << " ERROR(S) encountered!.\n";
+    else
+        std::cout << "All tests passed.\n";
+
+    return err;
+}
+
+/**
+ * Test system entry point.
+ *
+ * @param  argc - command line argument count.
+ * @param  argv - command line argument vector.
+ * @return error value or 0 if no errors.
+ */
+int main(int argc, char *argv[])
+{
+    return runTests();
 }
 
