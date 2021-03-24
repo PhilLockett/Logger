@@ -32,6 +32,7 @@
  */
 
 #include <iostream>
+#include <filesystem>
 
 #include "Log_c.h"
 
@@ -78,9 +79,10 @@ void localFunction(const int level)
  */
 int main(int argc, char *argv[])
 {
-//- Initialize testing set up.
-	log.setLogFilePath("logs");
-	log.enableTimestamp(false);
+//- Initialize test set up.
+    std::filesystem::remove_all("logs"); // Delete directory and contents.
+    log.setLogFilePath("logs");
+    log.enableTimestamp(false);
 
 //- Overide default log level from command line. Set the log level to a
 //  larger value for more verbose log entries.
