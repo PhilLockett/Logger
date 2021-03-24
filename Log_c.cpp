@@ -114,6 +114,7 @@ int Logger_c::flush(void)
 
 //- Clear the buffer.
     instance->cache.clear();
+    instance->count = 0;
 
     return ret;
 }
