@@ -27,7 +27,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
-#include <string.h>
+#include <string>
 
 #include "Log_c.h"
 
@@ -107,9 +107,9 @@ int Logger_c::flush(void)
 
 //- Copy the buffer to the log file.
     std::ofstream outfile(FileName, std::ofstream::out | std::ofstream::app);
-    for (std::vector<std::string>::iterator ii = instance->cache.begin(); ii != instance->cache.end(); ++ii)
+    for (auto line : instance->cache)
     {
-        outfile << (*ii) << '\n';
+        outfile << line << '\n';
     }
 
 //- Clear the buffer.
