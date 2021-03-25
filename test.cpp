@@ -75,6 +75,23 @@ static int getFileLength(std::string fileName)
     return count;
 }
 
+static bool compareFiles(std::string fileName1, std::string fileName2)
+{
+    std::ifstream infile1(fileName1, std::ifstream::in);
+    std::ifstream infile2(fileName2, std::ifstream::in);
+    std::string line1;
+    std::string line2;
+
+    while(!infile1.eof() && !infile2.eof())
+    {
+        getline(infile1, line1);
+        getline(infile2, line2);
+        if (line1.compare(line2) != 0)
+            return false;
+    }
+
+    return true;
+}
 
 /**
  * @section test logging code.
@@ -133,6 +150,10 @@ NEXT_CASE(test6, "Test log file length.")
     log.flush();
     REQUIRE(getFileLength(logFilePath) == 40)
 
+NEXT_CASE(test7, "Validate generated log file.")
+
+    REQUIRE(compareFiles(logFilePath, "expected-log.txt") == true)
+
 END_TEST
 
 int runTests(void)
@@ -146,7 +167,7 @@ int runTests(void)
     logFilePath = getFileName(log.getLogFilePath());
 
     std::cout << "Executing all tests.\n";
-//	  VERBOSE_OFF
+//    VERBOSE_OFF
 
     RUN_TEST(test0)
 
