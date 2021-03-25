@@ -97,13 +97,14 @@ static bool compareFiles(std::string fileName1, std::string fileName2)
  * @section test logging code.
  */
 
-#define MAJOR    2
-#define ERROR    3
-#define WARNING  4
-#define NOTICE   5
-#define INFO     6
-#define DEBUG    7
-#define VERBOSE  8
+static const int CRITICAL= 1;
+static const int MAJOR   = 2;
+static const int ERROR   = 3;
+static const int WARNING = 4;
+static const int NOTICE  = 5;
+static const int INFO    = 6;
+static const int DEBUG   = 7;
+static const int VERBOSE = 8;
 
 static Log_c log(__FILE__, ERROR);     // Only log serious messages.
 

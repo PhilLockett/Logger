@@ -25,7 +25,7 @@
 
 #include "Log_c.h"
 
-#define MAJOR 2
+static const int MAJOR   = 2;
 
 // Only log serious messages unless it is overridden.
 static Log_c log(__FILE__, MAJOR);
