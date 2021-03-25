@@ -41,7 +41,7 @@
 #include "unittest.h"
 
 /**
- * @section basic utility code..
+ * @section basic utility code.
  */
 
 static void deleteDirectory(std::string path)
@@ -49,7 +49,7 @@ static void deleteDirectory(std::string path)
     std::filesystem::remove_all(path); // Delete directory and contents.
 }
 
-static std::string getFileName(std::string path)
+static std::string getCurrentLogFilePath(std::string path)
 {
     time_t now = time(NULL);
     struct tm tim = *localtime(&now);
@@ -109,17 +109,21 @@ static Log_c log(__FILE__, ERROR);     // Only log serious messages.
 
 extern int remoteFunction(int level = MAJOR);
 
-static std::string logFilePath;
-
 
 UNIT_TEST(test0, "Test sending log entries using global log reference.")
+
+//- Initialize test set up.
+    const std::string path = "logs";
+    deleteDirectory(path);
+    log.setLogFilePath(path);
+    log.enableTimestamp(false);
 
     for (int loggingLevel = 1; loggingLevel < Log_c::MAX_LOG_LEVEL; ++loggingLevel)
         log.printf(loggingLevel, "Logging level set to %d.", log.getLogLevel());
 
 NEXT_CASE(test1, "Test sending log entries using local log reference.")
 
-    Log_c bob("Bob", DEBUG);	// Make Bob chatty.
+    Log_c bob("Bob", DEBUG);    // Make Bob chatty.
     for (int loggingLevel = 1; loggingLevel < Log_c::MAX_LOG_LEVEL; ++loggingLevel)
         bob.printf(loggingLevel, "Logging level set to %d.", bob.getLogLevel());
 
@@ -147,25 +151,19 @@ NEXT_CASE(test5, "Test sending verbose log entries from remote code.")
 
 NEXT_CASE(test6, "Test log file length.")
 
+    std::string currentLogFileName = getCurrentLogFilePath(log.getLogFilePath());
     log.flush();
-    REQUIRE(getFileLength(logFilePath) == 40)
+    REQUIRE(getFileLength(currentLogFileName) == 40)
 
 NEXT_CASE(test7, "Validate generated log file.")
 
-    REQUIRE(compareFiles(logFilePath, "expected-log.txt") == true)
+    REQUIRE(compareFiles(currentLogFileName, "expected-log.txt") == true)
 
 END_TEST
 
+
 int runTests(void)
 {
-//- Initialize test set up.
-    const std::string path = "logs";
-    deleteDirectory(path);
-    log.setLogFilePath(path);
-    log.enableTimestamp(false);
-
-    logFilePath = getFileName(log.getLogFilePath());
-
     std::cout << "Executing all tests.\n";
 //    VERBOSE_OFF
 
