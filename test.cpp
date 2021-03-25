@@ -164,7 +164,7 @@ END_TEST
 
 
 /**
- * @section basic utility code.
+ * @section test sending a large number of log entries code.
  */
 
 UNIT_TEST(test8, "Test sending a large number of log entries.")
