@@ -121,7 +121,7 @@ NEXT_CASE(test4, "Test interleaving log entries.")
         bob.printf(loggingLevel, "Logging level set to %d.", bob.getLogLevel());
     }
 
-NEXT_CASE(test2, "Test sending verbose log entries from remote code.")
+NEXT_CASE(test5, "Test sending verbose log entries from remote code.")
 
     remoteFunction(VERBOSE);   // Call test module.
 
