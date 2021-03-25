@@ -91,6 +91,8 @@ static Log_c log(__FILE__, ERROR);     // Only log serious messages.
 
 extern int remoteFunction(int level = MAJOR);
 
+static std::string logFilePath;
+
 
 UNIT_TEST(test0, "Test sending log entries using global log reference.")
 
@@ -130,9 +132,12 @@ END_TEST
 int runTests(void)
 {
 //- Initialize test set up.
-    std::filesystem::remove_all("logs"); // Delete directory and contents.
-    log.setLogFilePath("logs");
+    const std::string path = "logs";
+    deleteDirectory(path);
+    log.setLogFilePath(path);
     log.enableTimestamp(false);
+
+    logFilePath = getFileName(log.getLogFilePath());
 
     std::cout << "Executing all tests.\n";
 //	  VERBOSE_OFF
