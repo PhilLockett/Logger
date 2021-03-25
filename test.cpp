@@ -21,10 +21,11 @@
  * Unit test code for the Logging Implementation.
  *
  * Build using:
- *    g++ -c -o Log_c.o Log_c.cpp
- *    g++ -c -o test.o test.cpp
- *    g++ -c -o test2.o test2.cpp
- *    g++ -o test test.o test2.o Log_c.o 
+ *    g++ -std=c++20 -c -o test.o test.cpp
+ *    g++ -std=c++20 -c -o test2.o test2.cpp
+ *    g++ -std=c++20 -c -o Log_c.o Log_c.cpp
+ *    g++ -std=c++20 -c -o unittest.o unittest.cpp
+ *    g++ -std=c++20 -o test test.o test2.o Log_c.o unittest.o
  *
  * Test using:
  *    ./test
@@ -130,7 +131,7 @@ NEXT_CASE(test5, "Test sending verbose log entries from remote code.")
 NEXT_CASE(test6, "Test log file length.")
 
     log.flush();
-    REQUIRE(getFileLength(logFilePath) == 41)
+    REQUIRE(getFileLength(logFilePath) == 40)
 
 END_TEST
 
