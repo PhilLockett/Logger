@@ -32,12 +32,52 @@
  */
 
 #include <iostream>
+#include <fstream>
 #include <filesystem>
 
 #include "Log_c.h"
 
 #include "unittest.h"
 
+/**
+ * @section basic utility code..
+ */
+
+static void deleteDirectory(std::string path)
+{
+    std::filesystem::remove_all(path); // Delete directory and contents.
+}
+
+static std::string getFileName(std::string path)
+{
+    time_t now = time(NULL);
+    struct tm tim = *localtime(&now);
+    char FileName[80];
+
+    sprintf(FileName, "%s/log-%04d-%02d-%02d.txt", path.c_str(), tim.tm_year + 1900, tim.tm_mon + 1, tim.tm_mday);
+
+    return std::string(FileName);
+}
+
+static int getFileLength(std::string fileName)
+{
+    std::ifstream infile(fileName, std::ifstream::in);
+    int count = 0;
+    std::string line;
+
+    while(!infile.eof())
+    {
+        getline(infile, line);
+        count++;
+    }
+
+    return count;
+}
+
+
+/**
+ * @section test logging code.
+ */
 
 #define MAJOR    2
 #define ERROR    3
