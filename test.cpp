@@ -127,6 +127,11 @@ NEXT_CASE(test5, "Test sending verbose log entries from remote code.")
 
     remoteFunction(VERBOSE);   // Call test module.
 
+NEXT_CASE(test6, "Test log file length.")
+
+    log.flush();
+    REQUIRE(getFileLength(logFilePath) == 41)
+
 END_TEST
 
 int runTests(void)
@@ -143,10 +148,6 @@ int runTests(void)
 //	  VERBOSE_OFF
 
     RUN_TEST(test0)
-
-    log.flush();
-
-    std::cout << "Check results in " << log.getLogFilePath() << '\n';
 
     const int err = ERROR_COUNT;
     if (err)
