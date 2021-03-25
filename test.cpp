@@ -163,12 +163,40 @@ NEXT_CASE(test7, "Validate generated log file.")
 END_TEST
 
 
+/**
+ * @section basic utility code.
+ */
+
+UNIT_TEST(test8, "Test sending a large number of log entries.")
+
+//- Initialize test set up.
+    const std::string path = "speed";
+    deleteDirectory(path);
+    log.setLogFilePath(path);
+    log.enableTimestamp(true);
+    log.setLogLevel(NOTICE);
+
+    const int ENTRIES = 100000;
+    for (int i = 0; i < ENTRIES; ++i)
+    {
+        for (int loggingLevel = 1; loggingLevel < Log_c::MAX_LOG_LEVEL; ++loggingLevel)
+            log.printf(loggingLevel, "Logging level set to %d - adding log entry %d", log.getLogLevel(), i);
+    }
+
+    std::string currentLogFileName = getCurrentLogFilePath(log.getLogFilePath());
+    log.flush();
+    REQUIRE(getFileLength(currentLogFileName) == (ENTRIES*NOTICE)+1)
+
+END_TEST
+
+
 int runTests(void)
 {
     std::cout << "Executing all tests.\n";
 //    VERBOSE_OFF
 
     RUN_TEST(test0)
+    RUN_TEST(test8)
 
     const int err = ERROR_COUNT;
     if (err)
