@@ -93,20 +93,18 @@ public:
     static bool isLogLevelValid(int level) { return (level >= 0) && (level <= MAX_LOG_LEVEL); }
 
     int printf(int level, const char* format, ...);
-    int flush(void) { return loggerRef.flush(); }
+    int flush(void) { return Logger_c::getInstance().flush(); }
 
     int getLogLevel(void) const { return logLevel; }
     void setLogLevel(int V) { logLevel = V; }
 
-    std::string getCurrentLogFilePath(void) { return loggerRef.getCurrentLogFilePath(); }
-    const std::string & getLogFilePath(void) { return loggerRef.getLogFilePath(); }
-    bool setLogFilePath(const std::string & path) { return loggerRef.setLogFilePath(path); }
-    void enableTimestamp(bool enable) { loggerRef.enableTimestamp(enable); }
+    std::string getCurrentLogFilePath(void) { return Logger_c::getInstance().getCurrentLogFilePath(); }
+    const std::string & getLogFilePath(void) { return Logger_c::getInstance().getLogFilePath(); }
+    bool setLogFilePath(const std::string & path) { return Logger_c::getInstance().setLogFilePath(path); }
+    void enableTimestamp(bool enable) { Logger_c::getInstance().enableTimestamp(enable); }
 
 
 private:
-    Logger_c & loggerRef;
-
     char module[MODULE_NAME_LEN+1];
     int logLevel;
 

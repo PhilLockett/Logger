@@ -214,8 +214,7 @@ bool Logger_c::cacheLine(const char* qualifier, const char* format, va_list argp
  * @param  ModuleName - String identifier used in log messages.
  * @param  level - the logging level.
  */
-Log_c::Log_c(const char* moduleName, int level)
-    : loggerRef(Logger_c::getInstance()), logLevel(level)
+Log_c::Log_c(const char* moduleName, int level) : logLevel(level)
 {
     // Pad or truncate moduleName.
     sprintf(module, "%-*.*s", MODULE_NAME_LEN, MODULE_NAME_LEN, moduleName);
@@ -240,7 +239,7 @@ int Log_c::printf(int level, const char* format, ...)
         //- Use the module name and logging level as qualifier.
         sprintf(qualifier, "%s L%d -", module, level);
 
-        int ret = loggerRef.log(qualifier, format, argptr);
+        int ret = Logger_c::getInstance().log(qualifier, format, argptr);
 
         va_end(argptr);
 
