@@ -39,23 +39,7 @@
  * formatting log entries, buffering them and writing them to the log file.
  */
 
-Logger_c* Logger_c::instance = 0;       // Initialize instance on demand.
 
-
-/**
- * Create logging instance, if necessary, and return reference.
- *
- * @return reference to the logging instance.
- */
-Logger_c* Logger_c::getInstance(void)
-{
-    if (instance == 0)
-    {
-        instance = new Logger_c();
-    }
-
-    return instance;
-}
 
 
 /**
@@ -69,7 +53,7 @@ Logger_c* Logger_c::getInstance(void)
 int Logger_c::log(const char* qualifier, const char* format, va_list argptr)
 {
 //- Abort on previous error.
-    if (instance->error)
+    if (Logger_c::getInstance().error)
     {
         return -2;
     }
@@ -96,7 +80,8 @@ std::string Logger_c::getCurrentLogFilePath(void)
     struct tm tim = *localtime(&now);
     char FileName[180];
 
-    sprintf(FileName, "%s/log-%04d-%02d-%02d.txt", instance->logFilePath.c_str(), tim.tm_year + 1900, tim.tm_mon + 1, tim.tm_mday);
+    const char * path = Logger_c::getInstance().logFilePath.c_str();
+    sprintf(FileName, "%s/log-%04d-%02d-%02d.txt", path, tim.tm_year + 1900, tim.tm_mon + 1, tim.tm_mday);
 
     return std::string(FileName);
 }
@@ -111,18 +96,19 @@ int Logger_c::flush(void)
 {
     int ret = 0;
 
-    if (instance->logFilePath.empty())
-        instance->setLogFilePath("/logs");	// Set up default log path.
+    if (Logger_c::getInstance().logFilePath.empty())
+        Logger_c::getInstance().setLogFilePath("/logs");	// Set up default log path.
 
 //- Copy the buffer to the log file.
     std::ofstream outfile(getCurrentLogFilePath(), std::ofstream::out | std::ofstream::app);
-    for (int i = 0; i < instance->count; ++i)
+    const int entries = Logger_c::getInstance().count;
+    for (int i = 0; i < entries; ++i)
     {
-        outfile << instance->cache[i] << '\n';
+        outfile << Logger_c::getInstance().cache[i] << '\n';
     }
 
 //- Clear the buffer.
-    instance->count = 0;
+    Logger_c::getInstance().count = 0;
 
     return ret;
 }
@@ -140,15 +126,16 @@ bool Logger_c::setLogFilePath(const std::string & path)
     const size_t filePathLen = path.length();
     if ((filePathLen) && (path[filePathLen-1] != '/'))
     {
-        instance->logFilePath = path;
+        Logger_c::getInstance().logFilePath = path;
     }
     else
     {
-        instance->logFilePath = path.substr(0, filePathLen-1);
+        Logger_c::getInstance().logFilePath = path.substr(0, filePathLen-1);
     }
 
 //- Check if the directory exists and create if necessary.
-    DIR* dir = opendir(instance->logFilePath.c_str());
+    const char * logPath = Logger_c::getInstance().logFilePath.c_str();
+    DIR* dir = opendir(logPath);
     if (dir)
     {
         // Directory already exists.
@@ -158,15 +145,15 @@ bool Logger_c::setLogFilePath(const std::string & path)
     if (ENOENT == errno)
     {
         // Create a new Directory.
-        instance->error = mkdir(instance->logFilePath.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+        Logger_c::getInstance().error = mkdir(logPath, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     }
     else
     {
         // opendir() failed for some other reason.
-        instance->error = 1;
+        Logger_c::getInstance().error = 1;
     }
 
-    return (instance->error ? false : true);
+    return (Logger_c::getInstance().error ? false : true);
 }
 
 
@@ -202,14 +189,14 @@ bool Logger_c::cacheLine(const char* qualifier, const char* format, va_list argp
 //- Now add the actual log entry.
     if (vsprintf(p+bytes, format, argptr) < 0)
     {
-        instance->error = 1;
+        Logger_c::getInstance().error = 1;
     }
 
 //- Add the new line to the buffer and increment the line count.
-    instance->cache[instance->count] = line;
-    ++(instance->count);
+    Logger_c::getInstance().cache[Logger_c::getInstance().count] = line;
+    ++(Logger_c::getInstance().count);
 
-    return ((instance->count) == (__MAX_LINES__));
+    return ((Logger_c::getInstance().count) == (__MAX_LINES__));
 }
 
 
@@ -227,11 +214,9 @@ bool Logger_c::cacheLine(const char* qualifier, const char* format, va_list argp
  * @param  ModuleName - String identifier used in log messages.
  * @param  level - the logging level.
  */
-Log_c::Log_c(const char* moduleName, int level) : logLevel(level)
+Log_c::Log_c(const char* moduleName, int level)
+    : loggerRef(Logger_c::getInstance()), logLevel(level)
 {
-    // Reference to Logging Singleton.
-    loggerRef = Logger_c::getInstance();
-
     // Pad or truncate moduleName.
     sprintf(module, "%-*.*s", MODULE_NAME_LEN, MODULE_NAME_LEN, moduleName);
 }
@@ -255,7 +240,7 @@ int Log_c::printf(int level, const char* format, ...)
         //- Use the module name and logging level as qualifier.
         sprintf(qualifier, "%s L%d -", module, level);
 
-        int ret = loggerRef->log(qualifier, format, argptr);
+        int ret = loggerRef.log(qualifier, format, argptr);
 
         va_end(argptr);
 

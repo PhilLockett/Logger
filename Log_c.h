@@ -61,15 +61,15 @@ public:
     Logger_c(const Logger_c &) = delete;
     void operator=(const Logger_c &) = delete;
 
-    static Logger_c* getInstance();
+    static Logger_c & getInstance(void) { static Logger_c instance; return instance; }
 
     int log(const char* qualifier, const char* format, va_list argptr);
     int flush(void);
 
     bool setLogFilePath(const std::string & path);
     std::string getCurrentLogFilePath(void);
-    const std::string & getLogFilePath(void) { return instance->logFilePath; }
-    void enableTimestamp(bool enable) { instance->timestamp = enable; }
+    const std::string & getLogFilePath(void) { return Logger_c::getInstance().logFilePath; }
+    void enableTimestamp(bool enable) { Logger_c::getInstance().timestamp = enable; }
 
 };
 
@@ -93,19 +93,19 @@ public:
     static bool isLogLevelValid(int level) { return (level >= 0) && (level <= MAX_LOG_LEVEL); }
 
     int printf(int level, const char* format, ...);
-    int flush(void) { return loggerRef->flush(); }
+    int flush(void) { return loggerRef.flush(); }
 
     int getLogLevel(void) const { return logLevel; }
     void setLogLevel(int V) { logLevel = V; }
 
-    std::string getCurrentLogFilePath(void) { return loggerRef->getCurrentLogFilePath(); }
-    const std::string & getLogFilePath(void) { return loggerRef->getLogFilePath(); }
-    bool setLogFilePath(const std::string & path) { return loggerRef->setLogFilePath(path); }
-    void enableTimestamp(bool enable) { loggerRef->enableTimestamp(enable); }
+    std::string getCurrentLogFilePath(void) { return loggerRef.getCurrentLogFilePath(); }
+    const std::string & getLogFilePath(void) { return loggerRef.getLogFilePath(); }
+    bool setLogFilePath(const std::string & path) { return loggerRef.setLogFilePath(path); }
+    void enableTimestamp(bool enable) { loggerRef.enableTimestamp(enable); }
 
 
 private:
-    Logger_c* loggerRef;
+    Logger_c & loggerRef;
 
     char module[MODULE_NAME_LEN+1];
     int logLevel;
