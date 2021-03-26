@@ -86,24 +86,36 @@ int Logger_c::log(const char* qualifier, const char* format, va_list argptr)
 
 
 /**
+ * Construct the full log file path for todays log file.
+ *
+ * @return a new string containing the log file path.
+ */
+std::string Logger_c::getCurrentLogFilePath(void)
+{
+    time_t now = time(NULL);
+    struct tm tim = *localtime(&now);
+    char FileName[180];
+
+    sprintf(FileName, "%s/log-%04d-%02d-%02d.txt", instance->logFilePath.c_str(), tim.tm_year + 1900, tim.tm_mon + 1, tim.tm_mday);
+
+    return std::string(FileName);
+}
+
+
+/**
  * Flush the buffer sending output to todays log file.
  *
  * @return negative error value or 0 if no errors.
  */
 int Logger_c::flush(void)
 {
-    time_t now = time(NULL);
-    struct tm tim = *localtime(&now);
-    char FileName[80];
     int ret = 0;
 
     if (instance->logFilePath.empty())
         instance->setLogFilePath("/logs");	// Set up default log path.
 
-    sprintf(FileName, "%s/log-%04d-%02d-%02d.txt", instance->logFilePath.c_str(), tim.tm_year + 1900, tim.tm_mon + 1, tim.tm_mday);
-
 //- Copy the buffer to the log file.
-    std::ofstream outfile(FileName, std::ofstream::out | std::ofstream::app);
+    std::ofstream outfile(getCurrentLogFilePath(), std::ofstream::out | std::ofstream::app);
     for (int i = 0; i < instance->count; ++i)
     {
         outfile << instance->cache[i] << '\n';

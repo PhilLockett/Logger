@@ -49,17 +49,6 @@ static void deleteDirectory(std::string path)
     std::filesystem::remove_all(path); // Delete directory and contents.
 }
 
-static std::string getCurrentLogFilePath(std::string path)
-{
-    time_t now = time(NULL);
-    struct tm tim = *localtime(&now);
-    char FileName[80];
-
-    sprintf(FileName, "%s/log-%04d-%02d-%02d.txt", path.c_str(), tim.tm_year + 1900, tim.tm_mon + 1, tim.tm_mday);
-
-    return std::string(FileName);
-}
-
 static int getFileLength(std::string fileName)
 {
     std::ifstream infile(fileName, std::ifstream::in);
@@ -152,7 +141,7 @@ NEXT_CASE(test5, "Test sending verbose log entries from remote code.")
 
 NEXT_CASE(test6, "Test log file length.")
 
-    std::string currentLogFileName = getCurrentLogFilePath(log.getLogFilePath());
+    std::string currentLogFileName = log.getCurrentLogFilePath();
     log.flush();
     REQUIRE(getFileLength(currentLogFileName) == 40)
 
@@ -183,7 +172,7 @@ UNIT_TEST(test8, "Test sending a large number of log entries.")
             log.printf(loggingLevel, "Logging level set to %d - adding log entry %d", log.getLogLevel(), i);
     }
 
-    std::string currentLogFileName = getCurrentLogFilePath(log.getLogFilePath());
+    std::string currentLogFileName = log.getCurrentLogFilePath();
     log.flush();
     REQUIRE(getFileLength(currentLogFileName) == (ENTRIES*NOTICE)+1)
 

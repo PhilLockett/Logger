@@ -67,6 +67,7 @@ public:
     int flush(void);
 
     bool setLogFilePath(const std::string & path);
+    std::string getCurrentLogFilePath(void);
     const std::string & getLogFilePath(void) { return instance->logFilePath; }
     void enableTimestamp(bool enable) { instance->timestamp = enable; }
 
@@ -97,6 +98,7 @@ public:
     int getLogLevel(void) const { return logLevel; }
     void setLogLevel(int V) { logLevel = V; }
 
+    std::string getCurrentLogFilePath(void) { return loggerRef->getCurrentLogFilePath(); }
     const std::string & getLogFilePath(void) { return loggerRef->getLogFilePath(); }
     bool setLogFilePath(const std::string & path) { return loggerRef->setLogFilePath(path); }
     void enableTimestamp(bool enable) { loggerRef->enableTimestamp(enable); }
