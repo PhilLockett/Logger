@@ -52,8 +52,6 @@ Logger_c* Logger_c::getInstance(void)
     if (instance == 0)
     {
         instance = new Logger_c();
-
-        instance->setLogFilePath("/logs");  // Set up default log path.
     }
 
     return instance;
@@ -98,6 +96,9 @@ int Logger_c::flush(void)
     struct tm tim = *localtime(&now);
     char FileName[80];
     int ret = 0;
+
+    if (instance->logFilePath.empty())
+        instance->setLogFilePath("/logs");	// Set up default log path.
 
     sprintf(FileName, "%s/log-%04d-%02d-%02d.txt", instance->logFilePath.c_str(), tim.tm_year + 1900, tim.tm_mon + 1, tim.tm_mday);
 
