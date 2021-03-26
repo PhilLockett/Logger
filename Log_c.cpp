@@ -43,7 +43,7 @@ Logger_c* Logger_c::instance = 0;       // Initialize instance on demand.
 
 const int Logger_c::FILE_NAME_SIZE = 80;
 const int Logger_c::LINE_LENGTH = 512;  // Maximum length of each Line.
-const int Logger_c::LINE_COUNT = 16;    // Maximum Number of Lines in the Buffer.
+const int Logger_c::LINE_COUNT = __MAX_LINES__;    // Maximum Number of Lines in the Buffer.
 
 
 /**
@@ -107,13 +107,12 @@ int Logger_c::flush(void)
 
 //- Copy the buffer to the log file.
     std::ofstream outfile(FileName, std::ofstream::out | std::ofstream::app);
-    for (auto line : instance->cache)
+    for (int i = 0; i < instance->count; ++i)
     {
-        outfile << line << '\n';
+        outfile << instance->cache[i] << '\n';
     }
 
 //- Clear the buffer.
-    instance->cache.clear();
     instance->count = 0;
 
     return ret;
@@ -198,8 +197,8 @@ bool Logger_c::cacheLine(const char* qualifier, const char* format, va_list argp
     }
 
 //- Add the new line to the buffer and increment the line count.
-    instance->cache.push_back(line);
-    (instance->count)++;
+    instance->cache[instance->count] = line;
+    ++(instance->count);
 
     return ((instance->count) == (LINE_COUNT));
 }

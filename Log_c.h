@@ -27,11 +27,10 @@
 
 #include <stdlib.h>
 #include <string>
-#include <vector>
 
 #include <cstdarg>
 
-
+#define __MAX_LINES__ 16
 
 /**
  * @section Logging Singleton.
@@ -55,7 +54,7 @@ private:
     static const int FILE_NAME_SIZE;
     static const int LINE_LENGTH;   // Maximum length of each Line.
     static const int LINE_COUNT;    // Maximum Number of Lines in the Buffer.
-    std::vector<std::string> cache;
+    std::string cache[__MAX_LINES__];
     int count;                      // Current Number of Lines in the Buffer.
     std::string logFilePath;
     bool timestamp = true;
