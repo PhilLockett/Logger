@@ -41,10 +41,6 @@
 
 Logger_c* Logger_c::instance = 0;       // Initialize instance on demand.
 
-const int Logger_c::FILE_NAME_SIZE = 80;
-const int Logger_c::LINE_LENGTH = 512;  // Maximum length of each Line.
-const int Logger_c::LINE_COUNT = __MAX_LINES__;    // Maximum Number of Lines in the Buffer.
-
 
 /**
  * Create logging instance, if necessary, and return reference.
@@ -100,7 +96,7 @@ int Logger_c::flush(void)
 {
     time_t now = time(NULL);
     struct tm tim = *localtime(&now);
-    char FileName[FILE_NAME_SIZE];
+    char FileName[80];
     int ret = 0;
 
     sprintf(FileName, "%s/log-%04d-%02d-%02d.txt", instance->logFilePath.c_str(), tim.tm_year + 1900, tim.tm_mon + 1, tim.tm_mday);
@@ -138,7 +134,7 @@ bool Logger_c::setLogFilePath(const std::string & path)
         instance->logFilePath = path.substr(0, filePathLen-1);
     }
 
-//- Check if the direstory exists and create if necessary.
+//- Check if the directory exists and create if necessary.
     DIR* dir = opendir(instance->logFilePath.c_str());
     if (dir)
     {
@@ -171,7 +167,7 @@ bool Logger_c::setLogFilePath(const std::string & path)
  */
 bool Logger_c::cacheLine(const char* qualifier, const char* format, va_list argptr)
 {
-    char line[LINE_LENGTH];
+    char line[512];
     int bytes = 0;
     char * p = line;
 
@@ -200,7 +196,7 @@ bool Logger_c::cacheLine(const char* qualifier, const char* format, va_list argp
     instance->cache[instance->count] = line;
     ++(instance->count);
 
-    return ((instance->count) == (LINE_COUNT));
+    return ((instance->count) == (__MAX_LINES__));
 }
 
 

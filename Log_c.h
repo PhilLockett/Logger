@@ -51,9 +51,6 @@ private:
     static Logger_c* instance;
 
     int error;
-    static const int FILE_NAME_SIZE;
-    static const int LINE_LENGTH;   // Maximum length of each Line.
-    static const int LINE_COUNT;    // Maximum Number of Lines in the Buffer.
     std::string cache[__MAX_LINES__];
     int count;                      // Current Number of Lines in the Buffer.
     std::string logFilePath;
