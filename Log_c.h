@@ -43,7 +43,7 @@ class Logger_c
 public:
     static const int FILE_NAME_SIZE = 180;  // Maximum length of the log file path and name.
     static const int LINE_LENGTH = 512;     // Maximum length of each line.
-    static const int MAX_LINES = 16;        // Maximum number of lines in the buffer.
+    static const int MAX_LINES = 256;       // Maximum number of lines in the buffer.
 
 //- Delete the copy constructor and assignement operator.
     Logger_c(const Logger_c &) = delete;
