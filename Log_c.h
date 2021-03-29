@@ -30,7 +30,6 @@
 
 #include <cstdarg>
 
-#define __MAX_LINES__ 16
 
 /**
  * @section Logging Singleton.
@@ -41,22 +40,11 @@
 
 class Logger_c
 {
-private:
-//- Hide the default constructor and destructor.
-    Logger_c(void) : error(0), count(0) {}
-    virtual ~Logger_c(void) { flush(); }
-
-    bool cacheLine(const char* qualifier, const char* format, va_list argptr);
-
-    static Logger_c* instance;
-
-    int error;
-    std::string cache[__MAX_LINES__];
-    int count;                      // Current Number of Lines in the Buffer.
-    std::string logFilePath;
-    bool timestamp = true;
-
 public:
+    static const int FILE_NAME_SIZE = 180;  // Maximum length of the log file path and name.
+    static const int LINE_LENGTH = 512;     // Maximum length of each line.
+    static const int MAX_LINES = 16;        // Maximum number of lines in the buffer.
+
 //- Delete the copy constructor and assignement operator.
     Logger_c(const Logger_c &) = delete;
     void operator=(const Logger_c &) = delete;
@@ -70,6 +58,21 @@ public:
     std::string getCurrentLogFilePath(void);
     const std::string & getLogFilePath(void) { return Logger_c::getInstance().logFilePath; }
     void enableTimestamp(bool enable) { Logger_c::getInstance().timestamp = enable; }
+
+private:
+//- Hide the default constructor and destructor.
+    Logger_c(void) : error(0), count(0) {}
+    virtual ~Logger_c(void) { flush(); }
+
+    bool cacheLine(const char* qualifier, const char* format, va_list argptr);
+
+    static Logger_c* instance;
+
+    int error;
+    std::string cache[MAX_LINES];
+    int count;                      // Current Number of Lines in the Buffer.
+    std::string logFilePath;
+    bool timestamp = true;
 
 };
 

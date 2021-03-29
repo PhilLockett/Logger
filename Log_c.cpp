@@ -78,7 +78,7 @@ std::string Logger_c::getCurrentLogFilePath(void)
 {
     time_t now = time(NULL);
     struct tm tim = *localtime(&now);
-    char FileName[180];
+    char FileName[FILE_NAME_SIZE];
 
     const char * path = Logger_c::getInstance().logFilePath.c_str();
     sprintf(FileName, "%s/log-%04d-%02d-%02d.txt", path, tim.tm_year + 1900, tim.tm_mon + 1, tim.tm_mday);
@@ -167,7 +167,7 @@ bool Logger_c::setLogFilePath(const std::string & path)
  */
 bool Logger_c::cacheLine(const char* qualifier, const char* format, va_list argptr)
 {
-    char line[512];
+    char line[LINE_LENGTH];
     int bytes = 0;
     char * p = line;
 
@@ -196,7 +196,7 @@ bool Logger_c::cacheLine(const char* qualifier, const char* format, va_list argp
     Logger_c::getInstance().cache[Logger_c::getInstance().count] = line;
     ++(Logger_c::getInstance().count);
 
-    return ((Logger_c::getInstance().count) == (__MAX_LINES__));
+    return ((Logger_c::getInstance().count) == (MAX_LINES));
 }
 
 
