@@ -31,6 +31,8 @@ std::string UnitTest_c::condition = "UNDEFINED";
 bool UnitTest_c::verbose = true;
 int UnitTest_c::errors = 0;
 
+std::chrono::time_point<std::chrono::steady_clock> UnitTest_c::start;
+std::chrono::duration<double> UnitTest_c::elapsed_seconds;
 
 
 /**
@@ -51,13 +53,26 @@ void UnitTest_c::progress(const std::string & test, const std::string & desc)
     description = desc;
 
     if (verbose)
-        std::cout << '\t' << testCase << " - " << description << '\n';
+    {
+        std::cout << '\t' << testCase << " - " << description;
+        start = std::chrono::steady_clock::now();
+    }
 }
-
+void UnitTest_c::complete(void)
+{
+    if (verbose)
+    {
+        elapsed_seconds = std::chrono::steady_clock::now() - start;
+        std::cout << "\t-> " << elapsed_seconds.count() << "s\n";
+    }
+}
 void UnitTest_c::failure(const std::string & cond)
 {
     errors++;
     condition = cond;
+    if (verbose)
+        std::cerr << '\n';
+
     std::cerr << '\n';
     std::cerr << "While running " << testCase << " (" << description << "):\n";
     std::cerr << "\tRequirement (" << condition << ") failed\n";

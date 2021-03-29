@@ -25,6 +25,7 @@
 #define _UNITTEST_H__20210324_0940__INCLUDED_
 
 #include <string>
+#include <chrono>
 
 /**
  * @section unit test macro definitions.
@@ -40,9 +41,12 @@
     UnitTest_c::getInstance().progress(#func, desc);
 
 #define NEXT_CASE(func, desc) \
+    UnitTest_c::getInstance().complete();\
     UnitTest_c::getInstance().progress(#func, desc);
 
-#define END_TEST }
+#define END_TEST \
+    UnitTest_c::getInstance().complete();\
+}
 
 #define REQUIRE(cond) if (!(cond)) UnitTest_c::getInstance().failure(#cond);
 
@@ -71,6 +75,9 @@ private:
     static bool verbose;
     static int errors;
 
+    static std::chrono::time_point<std::chrono::steady_clock> start;
+    static std::chrono::duration<double> elapsed_seconds;
+
 
 public:
 //- Delete the copy constructor and assignement operator.
@@ -84,6 +91,7 @@ public:
     static void setVerbose(bool state = true) { verbose = state; }
     static bool isVerbose(void) { return verbose; }
     static void progress(const std::string & test, const std::string & desc);
+    static void complete(void);
     static void failure(const std::string & cond);
     static int getErrorCount(void) { return errors; }
 
