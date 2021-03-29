@@ -193,10 +193,11 @@ bool Logger_c::cacheLine(const char* qualifier, const char* format, va_list argp
     }
 
 //- Add the new line to the buffer and increment the line count.
-    Logger_c::getInstance().cache[Logger_c::getInstance().count] = line;
-    ++(Logger_c::getInstance().count);
+    int & count = Logger_c::getInstance().count;
+    Logger_c::getInstance().cache[count] = line;
+    ++count;
 
-    return ((Logger_c::getInstance().count) == (MAX_LINES));
+    return ((count) == (MAX_LINES));
 }
 
 
