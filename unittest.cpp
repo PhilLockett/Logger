@@ -54,7 +54,7 @@ void UnitTest_c::progress(const std::string & test, const std::string & desc)
 
     if (verbose)
     {
-        std::cout << '\t' << testCase << " - " << description;
+        std::cout << testCase << " - " << description << std::endl;
         start = std::chrono::steady_clock::now();
     }
 }
@@ -63,7 +63,7 @@ void UnitTest_c::complete(void)
     if (verbose)
     {
         elapsed_seconds = std::chrono::steady_clock::now() - start;
-        std::cout << "\t-> " << elapsed_seconds.count() << "s\n";
+        std::cout << testCase << " -> " << elapsed_seconds.count() << 's' << std::endl;
     }
 }
 void UnitTest_c::failure(const std::string & cond)
