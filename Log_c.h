@@ -41,9 +41,9 @@
 class Logger_c
 {
 public:
-    static const int FILE_NAME_SIZE = 180;  // Maximum length of the log file path and name.
-    static const int LINE_LENGTH = 512;     // Maximum length of each line.
-    static const int MAX_LINES = 256;       // Maximum number of lines in the buffer.
+    static const int FILE_NAME_SIZE{180};  // Maximum length of the log file path and name.
+    static const int LINE_LENGTH{512};     // Maximum length of each line.
+    static const int MAX_LINES{256};       // Maximum number of lines in the buffer.
 
 //- Delete the copy constructor and assignement operator.
     Logger_c(const Logger_c &) = delete;
@@ -60,19 +60,20 @@ public:
     void enableTimestamp(bool enable) { Logger_c::getInstance().timestamp = enable; }
 
 private:
+    int error;
+    int count;                      // Current Number of Lines in the Buffer.
+    bool timestamp;
+
 //- Hide the default constructor and destructor.
-    Logger_c(void) : error(0), count(0) {}
+    Logger_c(void) : error{}, count{}, timestamp{true} {}
     virtual ~Logger_c(void) { flush(); }
 
     bool cacheLine(const char* qualifier, const char* format, va_list argptr);
 
     static Logger_c* instance;
 
-    int error;
     std::string cache[MAX_LINES];
-    int count;                      // Current Number of Lines in the Buffer.
     std::string logFilePath;
-    bool timestamp = true;
 
 };
 
@@ -88,8 +89,8 @@ private:
 class Log_c
 {
 public:
-    static const int MAX_LOG_LEVEL = 9;      // Highest logging level supported.
-    static const int MODULE_NAME_LEN = 20;   // Maximum module name length.
+    static const int MAX_LOG_LEVEL{9};      // Highest logging level supported.
+    static const int MODULE_NAME_LEN{20};   // Maximum module name length.
 
     Log_c(const char* module, int level = 6);
 
