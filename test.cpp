@@ -141,7 +141,7 @@ NEXT_CASE(test5, "Test sending verbose log entries from remote code.")
 
 NEXT_CASE(test6, "Test log file length.")
 
-    std::string currentLogFileName = log.getCurrentLogFilePath();
+    std::string currentLogFileName = log.getFullLogFileName();
     log.flush();
     REQUIRE(getFileLength(currentLogFileName) == 40)
 
@@ -172,7 +172,7 @@ UNIT_TEST(test8, "Test sending a large number of log entries.")
             log.printf(loggingLevel, "Logging level set to %d - adding log entry %d", log.getLogLevel(), i);
     }
 
-    std::string currentLogFileName = log.getCurrentLogFilePath();
+    std::string currentLogFileName = log.getFullLogFileName();
     log.flush();
     REQUIRE(getFileLength(currentLogFileName) == (ENTRIES*NOTICE)+1)
 

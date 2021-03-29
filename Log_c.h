@@ -55,7 +55,7 @@ public:
     int flush(void);
 
     bool setLogFilePath(const std::string & path);
-    std::string getCurrentLogFilePath(void);
+    std::string getFullLogFileName(void);
     const std::string & getLogFilePath(void) { return Logger_c::getInstance().logFilePath; }
     void enableTimestamp(bool enable) { Logger_c::getInstance().timestamp = enable; }
 
@@ -100,7 +100,7 @@ public:
     int getLogLevel(void) const { return logLevel; }
     void setLogLevel(int V) { logLevel = V; }
 
-    std::string getCurrentLogFilePath(void) { return Logger_c::getInstance().getCurrentLogFilePath(); }
+    std::string getFullLogFileName(void) { return Logger_c::getInstance().getFullLogFileName(); }
     const std::string & getLogFilePath(void) { return Logger_c::getInstance().getLogFilePath(); }
     bool setLogFilePath(const std::string & path) { return Logger_c::getInstance().setLogFilePath(path); }
     void enableTimestamp(bool enable) { Logger_c::getInstance().enableTimestamp(enable); }

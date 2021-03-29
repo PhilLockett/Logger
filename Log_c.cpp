@@ -70,11 +70,11 @@ int Logger_c::log(const char* qualifier, const char* format, va_list argptr)
 
 
 /**
- * Construct the full log file path for todays log file.
+ * Construct the full log file name for todays log file.
  *
- * @return a new string containing the log file path.
+ * @return a new string containing the log file name.
  */
-std::string Logger_c::getCurrentLogFilePath(void)
+std::string Logger_c::getFullLogFileName(void)
 {
     time_t now = time(NULL);
     struct tm tim = *localtime(&now);
@@ -100,7 +100,7 @@ int Logger_c::flush(void)
         Logger_c::getInstance().setLogFilePath("/logs");	// Set up default log path.
 
 //- Copy the buffer to the log file.
-    std::ofstream outfile(getCurrentLogFilePath(), std::ofstream::out | std::ofstream::app);
+    std::ofstream outfile(getFullLogFileName(), std::ofstream::out | std::ofstream::app);
     const int entries = Logger_c::getInstance().count;
     for (int i = 0; i < entries; ++i)
     {
