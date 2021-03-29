@@ -70,8 +70,6 @@ private:
 
     bool cacheLine(const char* qualifier, const char* format, va_list argptr);
 
-    static Logger_c* instance;
-
     std::string cache[MAX_LINES];
     std::string logFilePath;
 
@@ -115,4 +113,3 @@ private:
 };
 
 #endif // !defined(_LOG_C_H__201130_1555__INCLUDED_)
-

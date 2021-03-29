@@ -249,5 +249,3 @@ int Log_c::printf(int level, const char* format, ...)
 
     return -1;
 }
-
-
