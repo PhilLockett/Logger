@@ -76,7 +76,7 @@ private:
     static int errors;
 
     static std::chrono::time_point<std::chrono::steady_clock> start;
-    static std::chrono::duration<double> elapsed_seconds;
+    static std::chrono::duration<float> elapsed_seconds;
 
 
 public:

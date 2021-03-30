@@ -32,7 +32,7 @@ bool UnitTest_c::verbose = true;
 int UnitTest_c::errors = 0;
 
 std::chrono::time_point<std::chrono::steady_clock> UnitTest_c::start;
-std::chrono::duration<double> UnitTest_c::elapsed_seconds;
+std::chrono::duration<float> UnitTest_c::elapsed_seconds;
 
 
 /**
