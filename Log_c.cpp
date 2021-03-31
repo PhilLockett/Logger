@@ -53,7 +53,7 @@
 int Logger_c::log(const char* qualifier, const char* format, va_list argptr)
 {
 //- Abort on previous error.
-    if (Logger_c::getInstance().error)
+    if (error)
     {
         return -2;
     }
@@ -80,7 +80,7 @@ std::string Logger_c::getFullLogFileName(void)
     struct tm tim = *localtime(&now);
     char FileName[FILE_NAME_SIZE];
 
-    const char * path = Logger_c::getInstance().logFilePath.c_str();
+    const char * path = logFilePath.c_str();
     sprintf(FileName, "%s/log-%04d-%02d-%02d.txt", path, tim.tm_year + 1900, tim.tm_mon + 1, tim.tm_mday);
 
     return std::string(FileName);
@@ -96,17 +96,17 @@ int Logger_c::flush(void)
 {
     int ret = 0;
 
-    if (Logger_c::getInstance().logFilePath.empty())
-        Logger_c::getInstance().setLogFilePath("/logs");	// Set up default log path.
+    if (logFilePath.empty())
+        setLogFilePath("/logs");	// Set up default log path.
 
 //- Copy the buffer to the log file.
     std::ofstream outfile(getFullLogFileName(), std::ofstream::out | std::ofstream::app);
-    const int entries = Logger_c::getInstance().count;
+    const int entries = count;
     auto line2Log = [&outfile](const auto & s) { outfile << s << '\n'; };
     std::for_each_n(cache.begin(), entries, line2Log);
 
 //- Clear the buffer.
-    Logger_c::getInstance().count = 0;
+    count = 0;
 
     return ret;
 }
@@ -124,15 +124,15 @@ bool Logger_c::setLogFilePath(const std::string & path)
     const size_t filePathLen = path.length();
     if ((filePathLen) && (path[filePathLen-1] != '/'))
     {
-        Logger_c::getInstance().logFilePath = path;
+        logFilePath = path;
     }
     else
     {
-        Logger_c::getInstance().logFilePath = path.substr(0, filePathLen-1);
+        logFilePath = path.substr(0, filePathLen-1);
     }
 
 //- Check if the directory exists and create if necessary.
-    const char * logPath = Logger_c::getInstance().logFilePath.c_str();
+    const char * logPath = logFilePath.c_str();
     DIR* dir = opendir(logPath);
     if (dir)
     {
@@ -143,15 +143,15 @@ bool Logger_c::setLogFilePath(const std::string & path)
     if (ENOENT == errno)
     {
         // Create a new Directory.
-        Logger_c::getInstance().error = mkdir(logPath, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+        error = mkdir(logPath, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
     }
     else
     {
         // opendir() failed for some other reason.
-        Logger_c::getInstance().error = 1;
+        error = 1;
     }
 
-    return (Logger_c::getInstance().error ? false : true);
+    return (error ? false : true);
 }
 
 
@@ -187,12 +187,11 @@ bool Logger_c::cacheLine(const char* qualifier, const char* format, va_list argp
 //- Now add the actual log entry.
     if (vsprintf(p+bytes, format, argptr) < 0)
     {
-        Logger_c::getInstance().error = 1;
+        error = 1;
     }
 
 //- Add the new line to the buffer and increment the line count.
-    int & count = Logger_c::getInstance().count;
-    Logger_c::getInstance().cache[count] = line;
+    cache[count] = line;
     ++count;
 
     return ((count) == (MAX_LINES));
