@@ -27,6 +27,7 @@
 
 #include <stdlib.h>
 #include <string>
+#include <array>
 
 #include <cstdarg>
 
@@ -70,7 +71,7 @@ private:
 
     bool cacheLine(const char* qualifier, const char* format, va_list argptr);
 
-    std::string cache[MAX_LINES];
+    std::array<std::string, MAX_LINES> cache;
     std::string logFilePath;
 
 };
