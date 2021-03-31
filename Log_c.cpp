@@ -74,7 +74,7 @@ int Logger_c::log(const char* qualifier, const char* format, va_list argptr)
  *
  * @return a new string containing the log file name.
  */
-std::string Logger_c::getFullLogFileName(void)
+std::string Logger_c::getFullLogFileName(void) const
 {
     time_t now = time(NULL);
     struct tm tim = *localtime(&now);
@@ -226,7 +226,7 @@ Log_c::Log_c(const char* moduleName, int level) : logLevel{level}
  * @param  format - the log entry format string, followed by parameters.
  * @return negative error value or 0 if no errors.
  */
-int Log_c::printf(int level, const char* format, ...)
+int Log_c::printf(int level, const char* format, ...) const
 {
     if (level <= logLevel)
     {
