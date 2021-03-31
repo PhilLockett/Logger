@@ -101,10 +101,10 @@ int Logger_c::flush(void)
 
 //- Copy the buffer to the log file.
     std::ofstream outfile(getFullLogFileName(), std::ofstream::out | std::ofstream::app);
-    const int entries = Logger_c::getInstance().count;
-    for (int i = 0; i < entries; ++i)
+    std::string * ptr = Logger_c::getInstance().cache;
+    for (int entries = Logger_c::getInstance().count; entries != 0; --entries, ++ptr)
     {
-        outfile << Logger_c::getInstance().cache[i] << '\n';
+        outfile << *ptr << '\n';
     }
 
 //- Clear the buffer.
