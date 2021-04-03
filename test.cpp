@@ -86,14 +86,11 @@ static bool compareFiles(std::string fileName1, std::string fileName2)
  * @section test logging code.
  */
 
-static const int CRITICAL= 1;
-static const int MAJOR   = 2;
-static const int ERROR   = 3;
-static const int WARNING = 4;
-static const int NOTICE  = 5;
-static const int INFO    = 6;
-static const int DEBUG   = 7;
-static const int VERBOSE = 8;
+enum LogLevel {
+    CRITICAL = 1,
+    MAJOR, ERROR, WARNING, NOTICE, INFO, DEBUG, VERBOSE,
+    MAX = Log_c::MAX_LOG_LEVEL
+};
 
 static Log_c log(__FILE__, ERROR);     // Only log serious messages.
 
@@ -108,13 +105,13 @@ UNIT_TEST(test0, "Test sending log entries using global log reference.")
     log.setLogFilePath(path);
     log.enableTimestamp(false);
 
-    for (int loggingLevel = 1; loggingLevel < Log_c::MAX_LOG_LEVEL; ++loggingLevel)
+    for (int loggingLevel = CRITICAL; loggingLevel < MAX; ++loggingLevel)
         log.printf(loggingLevel, "Logging level set to %d.", log.getLogLevel());
 
 NEXT_CASE(test1, "Test sending log entries using local log reference.")
 
     Log_c bob("Bob", DEBUG);    // Make Bob chatty.
-    for (int loggingLevel = 1; loggingLevel < Log_c::MAX_LOG_LEVEL; ++loggingLevel)
+    for (int loggingLevel = CRITICAL; loggingLevel < MAX; ++loggingLevel)
         bob.printf(loggingLevel, "Logging level set to %d.", bob.getLogLevel());
 
 NEXT_CASE(test2, "Test sending log entries from remote code.")
@@ -168,7 +165,7 @@ UNIT_TEST(test8, "Test sending a large number of log entries.")
     const int ENTRIES = 100000;
     for (int i = 0; i < ENTRIES; ++i)
     {
-        for (int loggingLevel = 1; loggingLevel < Log_c::MAX_LOG_LEVEL; ++loggingLevel)
+        for (int loggingLevel = CRITICAL; loggingLevel < MAX; ++loggingLevel)
             log.printf(loggingLevel, "Logging level set to %d - adding log entry %d", log.getLogLevel(), i);
     }
 
