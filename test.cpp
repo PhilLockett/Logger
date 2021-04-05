@@ -101,6 +101,15 @@ static Log_c log(__FILE__, ERROR);     // Only log serious messages.
 
 extern int remoteFunction(int level = MAJOR);
 
+void checkFile(const std::vector<std::string> & comp, const std::string currentLogFileName, int targetCount)
+{
+    log.flush();
+    std::vector<std::string> entries;
+    entries.reserve(targetCount+2);
+    REQUIRE(fileToVector(entries, currentLogFileName) == true)
+    REQUIRE(entries.size() == targetCount)
+    REQUIRE(std::equal(entries.begin(), entries.end(), comp.begin()))
+}
 
 UNIT_TEST(test0, "Test sending log entries using global log reference.")
 
@@ -117,13 +126,7 @@ UNIT_TEST(test0, "Test sending log entries using global log reference.")
     for (int loggingLevel = CRITICAL; loggingLevel < MAX; ++loggingLevel)
         log.printf(loggingLevel, "Logging level set to %d.", log.getLogLevel());
 
-{
-    log.flush();
-    std::vector<std::string> entries;
-    REQUIRE(fileToVector(entries, currentLogFileName) == true)
-    REQUIRE(entries.size() == 3)
-    REQUIRE(std::equal(entries.begin(), entries.end(), comp.begin()))
-}
+    checkFile(comp, currentLogFileName, 3);
 
 NEXT_CASE(test1, "Test sending log entries using local log reference.")
 
@@ -131,25 +134,13 @@ NEXT_CASE(test1, "Test sending log entries using local log reference.")
     for (int loggingLevel = CRITICAL; loggingLevel < MAX; ++loggingLevel)
         bob.printf(loggingLevel, "Logging level set to %d.", bob.getLogLevel());
 
-{
-    bob.flush();
-    std::vector<std::string> entries;
-    REQUIRE(fileToVector(entries, currentLogFileName) == true)
-    REQUIRE(entries.size() == 10)
-    REQUIRE(std::equal(entries.begin(), entries.end(), comp.begin()))
-}
+    checkFile(comp, currentLogFileName, 10);
 
 NEXT_CASE(test2, "Test sending log entries from remote code.")
 
     remoteFunction();   // Call test module.
 
-{
-    log.flush();
-    std::vector<std::string> entries;
-    REQUIRE(fileToVector(entries, currentLogFileName) == true)
-    REQUIRE(entries.size() == 12)
-    REQUIRE(std::equal(entries.begin(), entries.end(), comp.begin()))
-}
+    checkFile(comp, currentLogFileName, 12);
 
 NEXT_CASE(test3, "Test changing logging level.")
 
@@ -157,13 +148,7 @@ NEXT_CASE(test3, "Test changing logging level.")
     for (int loggingLevel = 1; loggingLevel < Log_c::MAX_LOG_LEVEL; ++loggingLevel)
         log.printf(loggingLevel, "Logging level set to %d.", log.getLogLevel());
 
-{
-    log.flush();
-    std::vector<std::string> entries;
-    REQUIRE(fileToVector(entries, currentLogFileName) == true)
-    REQUIRE(entries.size() == 18)
-    REQUIRE(std::equal(entries.begin(), entries.end(), comp.begin()))
-}
+    checkFile(comp, currentLogFileName, 18);
 
 NEXT_CASE(test4, "Test interleaving log entries.")
 
@@ -173,26 +158,13 @@ NEXT_CASE(test4, "Test interleaving log entries.")
         bob.printf(loggingLevel, "Logging level set to %d.", bob.getLogLevel());
     }
 
-{
-    log.flush();
-    std::vector<std::string> entries;
-    REQUIRE(fileToVector(entries, currentLogFileName) == true)
-    REQUIRE(entries.size() == 31)
-    REQUIRE(std::equal(entries.begin(), entries.end(), comp.begin()))
-}
+    checkFile(comp, currentLogFileName, 31);
 
 NEXT_CASE(test5, "Test sending verbose log entries from remote code.")
 
     remoteFunction(VERBOSE);   // Call test module.
 
-NEXT_CASE(test6, "Validate generated log file.")
-
-    log.flush();
-
-    std::vector<std::string> entries;
-    REQUIRE(fileToVector(entries, currentLogFileName) == true)
-    REQUIRE(entries.size() == 39)
-    REQUIRE(entries == comp)
+    checkFile(comp, currentLogFileName, 39);
 
 END_TEST
 
