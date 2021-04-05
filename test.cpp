@@ -35,6 +35,7 @@
 #include <iostream>
 #include <fstream>
 #include <filesystem>
+#include <vector>
 
 #include "Log_c.h"
 
@@ -44,7 +45,7 @@
  * @section basic utility code.
  */
 
-static void deleteDirectory(std::string path)
+static void deleteDirectory(const std::string & path)
 {
     std::filesystem::remove_all(path); // Delete directory and contents.
 }
@@ -58,29 +59,33 @@ static int getFileLength(std::string fileName)
     while(!infile.eof())
     {
         getline(infile, line);
-        count++;
+        if (!infile.eof() && line.length())
+            count++;
     }
 
     return count;
 }
 
-static bool compareFiles(std::string fileName1, std::string fileName2)
+static bool fileToVector(std::vector<std::string> & ret, std::string fileName)
 {
-    std::ifstream infile1(fileName1, std::ifstream::in);
-    std::ifstream infile2(fileName2, std::ifstream::in);
-    std::string line1;
-    std::string line2;
+//    std::cout << "fileToVector " << fileName << '\n';
+    std::ifstream infile(fileName, std::ifstream::in);
+    if (infile.eof())
+        return false;
 
-    while(!infile1.eof() && !infile2.eof())
+    int count = 0;
+    std::string line;
+
+    while (!infile.eof())
     {
-        getline(infile1, line1);
-        getline(infile2, line2);
-        if (line1.compare(line2) != 0)
-            return false;
+        getline(infile, line);
+        if (!infile.eof() && line.length())
+            ret.push_back(std::move(line));
     }
 
     return true;
 }
+
 
 /**
  * @section test logging code.
@@ -104,9 +109,21 @@ UNIT_TEST(test0, "Test sending log entries using global log reference.")
     deleteDirectory(path);
     log.setLogFilePath(path);
     log.enableTimestamp(false);
+    const std::string currentLogFileName = log.getFullLogFileName();
+
+    std::vector<std::string> comp;
+    REQUIRE(fileToVector(comp, "expected-log.txt") == true)
 
     for (int loggingLevel = CRITICAL; loggingLevel < MAX; ++loggingLevel)
         log.printf(loggingLevel, "Logging level set to %d.", log.getLogLevel());
+
+{
+    log.flush();
+    std::vector<std::string> entries;
+    REQUIRE(fileToVector(entries, currentLogFileName) == true)
+    REQUIRE(entries.size() == 3)
+    REQUIRE(std::equal(entries.begin(), entries.end(), comp.begin()))
+}
 
 NEXT_CASE(test1, "Test sending log entries using local log reference.")
 
@@ -114,15 +131,39 @@ NEXT_CASE(test1, "Test sending log entries using local log reference.")
     for (int loggingLevel = CRITICAL; loggingLevel < MAX; ++loggingLevel)
         bob.printf(loggingLevel, "Logging level set to %d.", bob.getLogLevel());
 
+{
+    bob.flush();
+    std::vector<std::string> entries;
+    REQUIRE(fileToVector(entries, currentLogFileName) == true)
+    REQUIRE(entries.size() == 10)
+    REQUIRE(std::equal(entries.begin(), entries.end(), comp.begin()))
+}
+
 NEXT_CASE(test2, "Test sending log entries from remote code.")
 
     remoteFunction();   // Call test module.
+
+{
+    log.flush();
+    std::vector<std::string> entries;
+    REQUIRE(fileToVector(entries, currentLogFileName) == true)
+    REQUIRE(entries.size() == 12)
+    REQUIRE(std::equal(entries.begin(), entries.end(), comp.begin()))
+}
 
 NEXT_CASE(test3, "Test changing logging level.")
 
     log.setLogLevel(INFO);
     for (int loggingLevel = 1; loggingLevel < Log_c::MAX_LOG_LEVEL; ++loggingLevel)
         log.printf(loggingLevel, "Logging level set to %d.", log.getLogLevel());
+
+{
+    log.flush();
+    std::vector<std::string> entries;
+    REQUIRE(fileToVector(entries, currentLogFileName) == true)
+    REQUIRE(entries.size() == 18)
+    REQUIRE(std::equal(entries.begin(), entries.end(), comp.begin()))
+}
 
 NEXT_CASE(test4, "Test interleaving log entries.")
 
@@ -132,19 +173,26 @@ NEXT_CASE(test4, "Test interleaving log entries.")
         bob.printf(loggingLevel, "Logging level set to %d.", bob.getLogLevel());
     }
 
+{
+    log.flush();
+    std::vector<std::string> entries;
+    REQUIRE(fileToVector(entries, currentLogFileName) == true)
+    REQUIRE(entries.size() == 31)
+    REQUIRE(std::equal(entries.begin(), entries.end(), comp.begin()))
+}
+
 NEXT_CASE(test5, "Test sending verbose log entries from remote code.")
 
     remoteFunction(VERBOSE);   // Call test module.
 
-NEXT_CASE(test6, "Test log file length.")
+NEXT_CASE(test6, "Validate generated log file.")
 
-    std::string currentLogFileName = log.getFullLogFileName();
     log.flush();
-    REQUIRE(getFileLength(currentLogFileName) == 40)
 
-NEXT_CASE(test7, "Validate generated log file.")
-
-    REQUIRE(compareFiles(currentLogFileName, "expected-log.txt") == true)
+    std::vector<std::string> entries;
+    REQUIRE(fileToVector(entries, currentLogFileName) == true)
+    REQUIRE(entries.size() == 39)
+    REQUIRE(entries == comp)
 
 END_TEST
 
@@ -171,7 +219,7 @@ UNIT_TEST(test8, "Test sending a large number of log entries.")
 
     std::string currentLogFileName = log.getFullLogFileName();
     log.flush();
-    REQUIRE(getFileLength(currentLogFileName) == (ENTRIES*NOTICE)+1)
+    REQUIRE(getFileLength(currentLogFileName) == (ENTRIES*NOTICE))
 
 END_TEST
 
