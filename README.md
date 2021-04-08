@@ -26,7 +26,14 @@ commented. The test code exercises most of the API and illustrates the usage.
 
 ## Cloning and Running
 
-To clone, build and run this code, execute the following unix/linux commands:
+The test code is dependent on UnitTest. To compile and run the Logger code you
+first need to clone the unit test code, then copy unittest.cpp and unittest.h 
+into the Logger directory before executing make.
+
+    git clone https://github.com/PhilLockett/UnitTest.git
+
+To clone, build and run the Logger code, including the test code, execute the 
+following unix/linux commands:
 
     git clone https://github.com/PhilLockett/Logger.git
     cd Logger/
