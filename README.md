@@ -37,6 +37,8 @@ following unix/linux commands:
 
     git clone https://github.com/PhilLockett/Logger.git
     cd Logger/
+    cp ../UnitTest/unittest.cpp .
+    cp ../UnitTest/unittest.h .
     make
     ./test
 
