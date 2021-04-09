@@ -70,13 +70,15 @@ static int getFileLength(std::string fileName)
     return count;
 }
 
-static bool fileToVector(std::vector<std::string> & ret, std::string fileName)
+static std::vector<std::string> fileToVector(std::string fileName, int reserve = 50)
 {
 //    std::cout << "fileToVector " << fileName << '\n';
     std::ifstream infile(fileName, std::ifstream::in);
+    std::vector<std::string> ret;
     if (!infile.is_open())
-        return false;
+        return ret;
 
+    ret.reserve(reserve);
     std::string line;
 
     while (getline(infile, line))
@@ -87,9 +89,8 @@ static bool fileToVector(std::vector<std::string> & ret, std::string fileName)
 
     infile.close();
 
-    return true;
+    return ret;
 }
-
 
 /**
  * @section test logging code.
@@ -108,9 +109,7 @@ extern int remoteFunction(int level = MAJOR);
 void checkFile(const std::vector<std::string> & comp, const std::string currentLogFileName, int targetCount)
 {
     log.flush();
-    std::vector<std::string> entries;
-    entries.reserve(targetCount+2);
-    REQUIRE(fileToVector(entries, currentLogFileName) == true)
+    std::vector<std::string> entries = fileToVector(currentLogFileName, targetCount);
     REQUIRE(entries.size() == targetCount)
     REQUIRE(std::equal(entries.begin(), entries.end(), comp.begin()))
 }
@@ -124,8 +123,8 @@ UNIT_TEST(test0, "Test sending log entries using global log reference.")
     log.enableTimestamp(false);
     const std::string currentLogFileName = log.getFullLogFileName();
 
-    std::vector<std::string> comp;
-    REQUIRE(fileToVector(comp, "expected-log.txt") == true)
+    std::vector<std::string> comp = fileToVector("expected-log.txt", 39);
+    REQUIRE(comp.size() == 39);
 
     for (int loggingLevel = CRITICAL; loggingLevel < MAX; ++loggingLevel)
         log.printf(loggingLevel, "Logging level set to %d.", log.getLogLevel());
