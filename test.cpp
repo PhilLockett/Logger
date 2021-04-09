@@ -53,6 +53,9 @@ static void deleteDirectory(const std::string & path)
 static int getFileLength(std::string fileName)
 {
     std::ifstream infile(fileName, std::ifstream::in);
+    if (!infile.is_open())
+        return 0;
+
     int count = 0;
     std::string line;
 
@@ -63,6 +66,8 @@ static int getFileLength(std::string fileName)
             count++;
     }
 
+    infile.close();
+
     return count;
 }
 
@@ -70,7 +75,7 @@ static bool fileToVector(std::vector<std::string> & ret, std::string fileName)
 {
 //    std::cout << "fileToVector " << fileName << '\n';
     std::ifstream infile(fileName, std::ifstream::in);
-    if (infile.eof())
+    if (!infile.is_open())
         return false;
 
     int count = 0;
@@ -82,6 +87,8 @@ static bool fileToVector(std::vector<std::string> & ret, std::string fileName)
         if (!infile.eof() && line.length())
             ret.push_back(std::move(line));
     }
+
+    infile.close();
 
     return true;
 }
