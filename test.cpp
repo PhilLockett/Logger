@@ -59,9 +59,8 @@ static int getFileLength(std::string fileName)
     int count = 0;
     std::string line;
 
-    while(!infile.eof())
+    while (getline(infile, line))
     {
-        getline(infile, line);
         if (!infile.eof() && line.length())
             count++;
     }
@@ -78,12 +77,10 @@ static bool fileToVector(std::vector<std::string> & ret, std::string fileName)
     if (!infile.is_open())
         return false;
 
-    int count = 0;
     std::string line;
 
-    while (!infile.eof())
+    while (getline(infile, line))
     {
-        getline(infile, line);
         if (!infile.eof() && line.length())
             ret.push_back(std::move(line));
     }
