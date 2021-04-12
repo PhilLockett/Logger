@@ -50,7 +50,7 @@
  * @param  argptr - parameters for format string.
  * @return negative error value or 0 if no errors.
  */
-int Logger_c::log(const char* qualifier, const char* format, va_list argptr)
+int Logger_c::_log(const char* qualifier, const char* format, va_list argptr)
 {
 //- Abort on previous error.
     if (error)
@@ -60,9 +60,9 @@ int Logger_c::log(const char* qualifier, const char* format, va_list argptr)
 
 //- Buffer the log line then flush the buffer if full.
     int ret = 0;
-    if (cacheLine(qualifier, format, argptr))
+    if (_cacheLine(qualifier, format, argptr))
     {
-        ret = flush();
+        ret = _flush();
     }
 
     return ret;
@@ -74,7 +74,7 @@ int Logger_c::log(const char* qualifier, const char* format, va_list argptr)
  *
  * @return a new string containing the log file name.
  */
-std::string Logger_c::getFullLogFileName(void) const
+std::string Logger_c::_getFullLogFileName(void) const
 {
     time_t now = time(NULL);
     struct tm tim = *localtime(&now);
@@ -92,15 +92,15 @@ std::string Logger_c::getFullLogFileName(void) const
  *
  * @return negative error value or 0 if no errors.
  */
-int Logger_c::flush(void)
+int Logger_c::_flush(void)
 {
     int ret = 0;
 
     if (logFilePath.empty())
-        setLogFilePath("/logs");	// Set up default log path.
+        _setLogFilePath("/logs");	// Set up default log path.
 
 //- Copy the buffer to the log file.
-    std::ofstream outfile(getFullLogFileName(), std::ofstream::out | std::ofstream::app);
+    std::ofstream outfile(_getFullLogFileName(), std::ofstream::out | std::ofstream::app);
     const int entries = count;
     auto line2Log = [&outfile](const auto & s) { outfile << s << '\n'; };
     std::for_each_n(cache.begin(), entries, line2Log);
@@ -118,7 +118,7 @@ int Logger_c::flush(void)
  *
  * @return true if successful, false otherwise.
  */
-bool Logger_c::setLogFilePath(const std::string & path)
+bool Logger_c::_setLogFilePath(const std::string & path)
 {
 //- Save the new path and Strip off trailing '/' if present.
     const size_t filePathLen = path.length();
@@ -163,7 +163,7 @@ bool Logger_c::setLogFilePath(const std::string & path)
  * @param  argptr - parameters for format string.
  * @return true if the Buffer is full, false otherwise.
  */
-bool Logger_c::cacheLine(const char* qualifier, const char* format, va_list argptr)
+bool Logger_c::_cacheLine(const char* qualifier, const char* format, va_list argptr)
 {
     char line[LINE_LENGTH];
     int bytes = 0;

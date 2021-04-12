@@ -3,5 +3,6 @@
 *.exe
 logs/
 speed/
+threads/
 unittest.*
 timings.txt

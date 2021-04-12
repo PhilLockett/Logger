@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <string>
 #include <array>
+#include <future>
 
 #include <cstdarg>
 
@@ -52,13 +53,13 @@ public:
 
     static Logger_c & getInstance(void) { static Logger_c instance; return instance; }
 
-    int log(const char* qualifier, const char* format, va_list argptr);
-    int flush(void);
+    int log(const char* qualifier, const char* format, va_list argptr) { std::lock_guard<std::mutex> lock(logMutex); return _log(qualifier, format, argptr); }
+    int flush(void) { std::lock_guard<std::mutex> lock(logMutex); return _flush(); }
 
-    bool setLogFilePath(const std::string & path);
-    std::string getFullLogFileName(void) const;
-    const std::string & getLogFilePath(void) { return Logger_c::getInstance().logFilePath; }
-    void enableTimestamp(bool enable) { Logger_c::getInstance().timestamp = enable; }
+    bool setLogFilePath(const std::string & path) { std::lock_guard<std::mutex> lock(logMutex); return _setLogFilePath(path); }
+    std::string getFullLogFileName(void) const  { std::lock_guard<std::mutex> lock(logMutex); return _getFullLogFileName(); }
+    const std::string & getLogFilePath(void) { std::lock_guard<std::mutex> lock(logMutex); return logFilePath; }
+    void enableTimestamp(bool enable) { std::lock_guard<std::mutex> lock(logMutex); timestamp = enable; }
 
 private:
     int error;
@@ -69,8 +70,14 @@ private:
     Logger_c(void) : error{}, count{}, timestamp{true} {}
     virtual ~Logger_c(void) { flush(); }
 
-    bool cacheLine(const char* qualifier, const char* format, va_list argptr);
+    bool _cacheLine(const char* qualifier, const char* format, va_list argptr);
+    int _log(const char* qualifier, const char* format, va_list argptr);
+    int _flush(void);
 
+    bool _setLogFilePath(const std::string & path);
+    std::string _getFullLogFileName(void) const;
+
+    mutable std::mutex logMutex;
     std::array<std::string, MAX_LINES> cache;
     std::string logFilePath;
 
