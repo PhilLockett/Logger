@@ -59,27 +59,27 @@ public:
     bool setLogFilePath(const std::string & path) { std::lock_guard<std::mutex> lock(logMutex); return _setLogFilePath(path); }
     std::string getFullLogFileName(void) const  { std::lock_guard<std::mutex> lock(logMutex); return _getFullLogFileName(); }
     const std::string & getLogFilePath(void) { std::lock_guard<std::mutex> lock(logMutex); return logFilePath; }
+
     void enableTimestamp(bool enable) { std::lock_guard<std::mutex> lock(logMutex); timestamp = enable; }
 
 private:
-    int error;
-    int count;                      // Current Number of Lines in the Buffer.
-    bool timestamp;
-
 //- Hide the default constructor and destructor.
     Logger_c(void) : error{}, count{}, timestamp{true} {}
     virtual ~Logger_c(void) { flush(); }
 
+    std::string _getFullLogFileName(void) const;
+    bool _setLogFilePath(const std::string & path);
+
+    int _flush(void);
     bool _cacheLine(const char* qualifier, const char* format, va_list argptr);
     int _log(const char* qualifier, const char* format, va_list argptr);
-    int _flush(void);
-
-    bool _setLogFilePath(const std::string & path);
-    std::string _getFullLogFileName(void) const;
 
     mutable std::mutex logMutex;
     std::array<std::string, MAX_LINES> cache;
     std::string logFilePath;
+    int error;
+    int count;                      // Current Number of Lines in the Buffer.
+    bool timestamp;
 
 };
 

@@ -40,35 +40,6 @@
  */
 
 
-
-
-/**
- * Log the line and flush the buffer if full.
- *
- * @param  qualifier - log entry qualifier, usually module name and log level.
- * @param  format - the log entry format string.
- * @param  argptr - parameters for format string.
- * @return negative error value or 0 if no errors.
- */
-int Logger_c::_log(const char* qualifier, const char* format, va_list argptr)
-{
-//- Abort on previous error.
-    if (error)
-    {
-        return -2;
-    }
-
-//- Buffer the log line then flush the buffer if full.
-    int ret = 0;
-    if (_cacheLine(qualifier, format, argptr))
-    {
-        ret = _flush();
-    }
-
-    return ret;
-}
-
-
 /**
  * Construct the full log file name for todays log file.
  *
@@ -84,31 +55,6 @@ std::string Logger_c::_getFullLogFileName(void) const
     sprintf(FileName, "%s/log-%04d-%02d-%02d.txt", path, tim.tm_year + 1900, tim.tm_mon + 1, tim.tm_mday);
 
     return std::string(FileName);
-}
-
-
-/**
- * Flush the buffer sending output to todays log file.
- *
- * @return negative error value or 0 if no errors.
- */
-int Logger_c::_flush(void)
-{
-    int ret = 0;
-
-    if (logFilePath.empty())
-        _setLogFilePath("/logs");	// Set up default log path.
-
-//- Copy the buffer to the log file.
-    std::ofstream outfile(_getFullLogFileName(), std::ofstream::out | std::ofstream::app);
-    const int entries = count;
-    auto line2Log = [&outfile](const auto & s) { outfile << s << '\n'; };
-    std::for_each_n(cache.begin(), entries, line2Log);
-
-//- Clear the buffer.
-    count = 0;
-
-    return ret;
 }
 
 
@@ -156,6 +102,31 @@ bool Logger_c::_setLogFilePath(const std::string & path)
 
 
 /**
+ * Flush the buffer sending output to todays log file.
+ *
+ * @return negative error value or 0 if no errors.
+ */
+int Logger_c::_flush(void)
+{
+    int ret = 0;
+
+    if (logFilePath.empty())
+        _setLogFilePath("/logs");	// Set up default log path.
+
+//- Copy the buffer to the log file.
+    std::ofstream outfile(_getFullLogFileName(), std::ofstream::out | std::ofstream::app);
+    const int entries = count;
+    auto line2Log = [&outfile](const auto & s) { outfile << s << '\n'; };
+    std::for_each_n(cache.begin(), entries, line2Log);
+
+//- Clear the buffer.
+    count = 0;
+
+    return ret;
+}
+
+
+/**
  * Creates and buffers the log entry.
  *
  * @param  qualifier - log entry qualifier, usually module name and log level.
@@ -196,6 +167,34 @@ bool Logger_c::_cacheLine(const char* qualifier, const char* format, va_list arg
 
     return ((count) == (MAX_LINES));
 }
+
+
+/**
+ * Log the line and flush the buffer if full.
+ *
+ * @param  qualifier - log entry qualifier, usually module name and log level.
+ * @param  format - the log entry format string.
+ * @param  argptr - parameters for format string.
+ * @return negative error value or 0 if no errors.
+ */
+int Logger_c::_log(const char* qualifier, const char* format, va_list argptr)
+{
+//- Abort on previous error.
+    if (error)
+    {
+        return -2;
+    }
+
+//- Buffer the log line then flush the buffer if full.
+    int ret = 0;
+    if (_cacheLine(qualifier, format, argptr))
+    {
+        ret = _flush();
+    }
+
+    return ret;
+}
+
 
 
 
