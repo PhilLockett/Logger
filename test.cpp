@@ -138,7 +138,7 @@ void checkFile(const std::vector<std::string> & comp, const std::string currentL
 UNIT_TEST(test0, "Test sending log entries using global log reference.")
 
 //- Initialize test set up.
-    const std::string path = "logs";
+    const std::string path = "logs/";
     deleteDirectory(path);
     log.setLogFilePath(path);
     log.enableTimestamp(false);
