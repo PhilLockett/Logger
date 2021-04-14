@@ -24,9 +24,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
-#include <dirent.h>
-#include <sys/stat.h>
-
+#include <filesystem>
 #include <algorithm>
 
 #include "Log_c.h"
@@ -83,27 +81,8 @@ bool Logger_c::_setLogFilePath(const std::string & path)
         logFilePath = path.substr(0, last + 1);
     }
 
-//- Check if the directory exists and create if necessary.
-    const char * logPath = logFilePath.c_str();
-    DIR* dir = opendir(logPath);
-    if (dir)
-    {
-        // Directory already exists.
-        closedir(dir);
-    }
-    else
-    if (ENOENT == errno)
-    {
-        // Create a new Directory.
-        error = mkdir(logPath, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-    }
-    else
-    {
-        // opendir() failed for some other reason.
-        error = 1;
-    }
-
-    return (error ? false : true);
+//- Create directory.
+    return std::filesystem::create_directories(logFilePath);
 }
 
 
