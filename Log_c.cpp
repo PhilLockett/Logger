@@ -112,6 +112,23 @@ int Logger_c::_flush(void)
 
 
 /**
+ * Insert a time stamp into the buffer pointed at by p.
+ *
+ * @param p - pointer to buffer to hold time stamp.
+ * @return the length of the time stamp.
+ */
+int Logger_c::_getTimestamp(char * p) const
+{
+    struct timespec tp;
+    clock_gettime(CLOCK_REALTIME, &tp);
+
+    struct tm tim = *localtime(&tp.tv_sec);
+
+    const int Micros = tp.tv_nsec/1000;
+
+    return sprintf(p, "%02d:%02d:%02d.%06d ", tim.tm_hour, tim.tm_min, tim.tm_sec, Micros);
+}
+/**
  * Creates and buffers the log entry.
  *
  * @param  qualifier - log entry qualifier, usually module name and log level.
@@ -128,13 +145,7 @@ bool Logger_c::_cacheLine(const char* qualifier, const char* format, va_list arg
 //- Conditionally add the time stamp.
     if (timestamp == true)
     {
-        struct timespec tp;
-        clock_gettime(CLOCK_REALTIME, &tp);
-
-        struct tm tim = *localtime(&tp.tv_sec);
-
-        const int Micros = tp.tv_nsec/1000;
-        bytes += sprintf(p+bytes, "%02d:%02d:%02d.%06d ", tim.tm_hour, tim.tm_min, tim.tm_sec, Micros);
+        bytes += _getTimestamp(p);
     }
 
 //- Add the qualifier.

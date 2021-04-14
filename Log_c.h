@@ -71,6 +71,7 @@ private:
     bool _setLogFilePath(const std::string & path);
 
     int _flush(void);
+    int _getTimestamp(char * p) const;
     bool _cacheLine(const char* qualifier, const char* format, va_list argptr);
     int _log(const char* qualifier, const char* format, va_list argptr);
 
