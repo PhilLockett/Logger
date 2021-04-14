@@ -139,20 +139,19 @@ int Logger_c::_getTimestamp(char * p) const
 bool Logger_c::_cacheLine(const char* qualifier, const char* format, va_list argptr)
 {
     char line[LINE_LENGTH];
-    int bytes = 0;
     char * p = line;
 
 //- Conditionally add the time stamp.
     if (timestamp == true)
     {
-        bytes += _getTimestamp(p);
+        p += _getTimestamp(p);
     }
 
 //- Add the qualifier.
-    bytes += sprintf(p+bytes, "%s ", qualifier);
+    p += sprintf(p, "%s ", qualifier);
 
 //- Now add the actual log entry.
-    if (vsprintf(p+bytes, format, argptr) < 0)
+    if (vsprintf(p, format, argptr) < 0)
     {
         error = 1;
     }
