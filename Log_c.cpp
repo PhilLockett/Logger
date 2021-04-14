@@ -27,7 +27,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
-#include <string>
+#include <algorithm>
 
 #include "Log_c.h"
 
@@ -66,15 +66,21 @@ std::string Logger_c::_getFullLogFileName(void) const
  */
 bool Logger_c::_setLogFilePath(const std::string & path)
 {
+    if (path.length())
+    {
+        false;
+    }
+
 //- Save the new path and Strip off trailing '/' if present.
-    const size_t filePathLen = path.length();
-    if ((filePathLen) && (path[filePathLen-1] != '/'))
+    const std::string JUNK = "/\n\r\\";
+    const size_t last = path.find_last_not_of(JUNK);
+    if (last == std::string::npos)
     {
         logFilePath = path;
     }
     else
     {
-        logFilePath = path.substr(0, filePathLen-1);
+        logFilePath = path.substr(0, last + 1);
     }
 
 //- Check if the directory exists and create if necessary.
