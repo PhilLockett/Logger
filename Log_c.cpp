@@ -95,8 +95,8 @@ int Logger_c::_flush(void)
 {
     int ret = 0;
 
-    if (logFilePath.empty())
-        _setLogFilePath("/logs");	// Set up default log path.
+    // Set up default log path, if necessary.
+    std::call_once(checkFilePathSet, [this](){ if (logFilePath.empty()) _setLogFilePath("/logs"); });
 
 //- Copy the buffer to the log file.
     std::ofstream outfile(_getFullLogFileName(), std::ofstream::out | std::ofstream::app);

@@ -75,6 +75,7 @@ private:
     bool _cacheLine(const char* qualifier, const char* format, va_list argptr);
     int _log(const char* qualifier, const char* format, va_list argptr);
 
+    std::once_flag checkFilePathSet;
     mutable std::mutex logMutex;
     std::array<std::string, MAX_LINES> cache;
     std::string logFilePath;
