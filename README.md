@@ -42,19 +42,13 @@ following unix/linux commands:
     make
     ./test
 
-The initial logging level for 'test.cpp' can be set from the command line, 
-but the test code does set the logging level to 5 half way through testing.
-Example of setting the initial logging level for 'test.cpp' to the maximum:
-
-    ./test 9
-
 ## Points of interest
 
 This code has the following points of interest:
 
   * The main logger code (Logger_c) is implemented as a singleton.
   * The API (Log_c) is implemented as a façade.
-  * The API hides the pointer to the logger instance.
-  * The API maintains the modules name and logging level.
-  * The log file path can easily be modified as needed.
+  * The API hides references to the logger instance.
+  * The API maintains the identifying name and logging level.
+  * The log file path can be specified as needed (default: '/logs').
   * Timestamps can be suppressed for 'before and after' log file comparison.
