@@ -57,6 +57,7 @@ static void deleteDirectory(const std::string & path)
     std::filesystem::remove_all(path); // Delete directory and contents.
 }
 
+// Counts the number of lines in a text file.
 static int getFileLength(const std::string & fileName)
 {
     std::ifstream infile(fileName, std::ifstream::in);
@@ -77,6 +78,7 @@ static int getFileLength(const std::string & fileName)
     return count;
 }
 
+// Checks that all lines in a text file are of the required length.
 static bool checkFileLineLength(const std::string & fileName, int length)
 {
     std::ifstream infile(fileName, std::ifstream::in);
