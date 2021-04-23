@@ -5,4 +5,6 @@ logs/
 speed/
 threads/
 unittest.*
+profile.txt
+results.txt
 timings.txt
