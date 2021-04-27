@@ -58,15 +58,14 @@ std::string Logger_c::_getFullLogFileName(void) const
 
 /**
  * Sets the path for the log files and ensures that the directory exists.
- * Also updates "error" if problems encountered, clears it otherwise.
  *
  * @return true if successful, false otherwise.
  */
 bool Logger_c::_setLogFilePath(const std::string & path)
 {
-    if (path.length())
+    if (path.empty())
     {
-        false;
+        return false;
     }
 
 //- Save the new path and Strip off trailing '/' if present.
