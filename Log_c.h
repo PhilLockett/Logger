@@ -18,8 +18,7 @@
  *
  * @section DESCRIPTION
  *
- * Interface for the Logging Implementation. Creates the reference to
- * the Logger Singleton.
+ * Interface for the Logging Implementation.
  */
 
 #if !defined(_LOG_C_H__201130_1555__INCLUDED_)
@@ -37,15 +36,15 @@
  * @section Logging Singleton.
  *
  * Implementation of the Logging Singleton. This code does the work of
- * formatting log entries, buffering them and writing them to the log file.
+ * formatting log entries, caching them and writing them to the log file.
  */
 
 class Logger_c
 {
 public:
-    static const int FILE_NAME_SIZE{180};  // Maximum length of the log file path and name.
-    static const int LINE_LENGTH{512};     // Maximum length of each line.
-    static const int MAX_LINES{256};       // Maximum number of lines in the buffer.
+    static const int FILE_NAME_LENGTH{180}; // Maximum length of the path to the log file.
+    static const int LINE_LENGTH{512};      // Maximum length of a line.
+    static const int MAX_LINES{256};        // Maximum number of cached lines.
 
 //- Delete the copy constructor and assignement operator.
     Logger_c(const Logger_c &) = delete;
@@ -80,7 +79,7 @@ private:
     std::array<std::string, MAX_LINES> cache;
     std::string logFilePath;
     int error;
-    int count;                      // Current Number of Lines in the Buffer.
+    int count;                      // Current number of cached lines.
     bool timestamp;
 
 };
@@ -91,8 +90,8 @@ private:
  *
  * This is the user interface implemented as a facade.
  *
- * This code holds a local reference to the logging singleton, the module name
- * and the current log level setting.
+ * Holds the module name and the current log level setting and alleviates the
+ * getInstance() need.
  */
 class Log_c
 {
@@ -118,7 +117,7 @@ public:
 
 private:
     char module[MODULE_NAME_LEN+1];
-    int logLevel;
+    int logLevel;                   // Current logging level cut off.
 
 };
 

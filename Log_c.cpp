@@ -34,7 +34,7 @@
  * @section Logging Singleton.
  *
  * Implementation of the Logging Singleton. This code does the work of
- * formatting log entries, buffering them and writing them to the log file.
+ * formatting log entries, caching them and writing them to the log file.
  */
 
 
@@ -47,7 +47,7 @@ std::string Logger_c::_getFullLogFileName(void) const
 {
     time_t now = time(NULL);
     struct tm tim = *localtime(&now);
-    char FileName[FILE_NAME_SIZE];
+    char FileName[FILE_NAME_LENGTH];
 
     const char * path = logFilePath.c_str();
     sprintf(FileName, "%s/log-%04d-%02d-%02d.txt", path, tim.tm_year + 1900, tim.tm_mon + 1, tim.tm_mday);
@@ -87,7 +87,7 @@ bool Logger_c::_setLogFilePath(const std::string & path)
 
 
 /**
- * Flush the buffer sending output to todays log file.
+ * Write the cache into the current log file then clear the cache.
  *
  * @return negative error value or 0 if no errors.
  */
@@ -98,13 +98,13 @@ int Logger_c::_flush(void)
     // Set up default log path, if necessary.
     std::call_once(checkFilePathSet, [this](){ if (logFilePath.empty()) _setLogFilePath("/logs"); });
 
-//- Copy the buffer to the log file.
+//- Write the cache to the log file.
     std::ofstream outfile(_getFullLogFileName(), std::ofstream::out | std::ofstream::app);
     const int entries = count;
     auto line2Log = [&outfile](const auto & s) { outfile << s << '\n'; };
     std::for_each_n(cache.begin(), entries, line2Log);
 
-//- Clear the buffer.
+//- Clear the cache.
     count = 0;
 
     return ret;
@@ -129,12 +129,12 @@ int Logger_c::_getTimestamp(char * p) const
     return sprintf(p, "%02d:%02d:%02d.%06d ", tim.tm_hour, tim.tm_min, tim.tm_sec, Micros);
 }
 /**
- * Creates and buffers the log entry.
+ * Generates and caches the log entry.
  *
  * @param  qualifier - log entry qualifier, usually module name and log level.
  * @param  format - the log entry format string.
  * @param  argptr - parameters for format string.
- * @return true if the Buffer is full, false otherwise.
+ * @return true if the cache is full, false otherwise.
  */
 bool Logger_c::_cacheLine(const char* qualifier, const char* format, va_list argptr)
 {
@@ -156,7 +156,7 @@ bool Logger_c::_cacheLine(const char* qualifier, const char* format, va_list arg
         error = 1;
     }
 
-//- Add the new line to the buffer and increment the line count.
+//- Add the new line to the cache and increment the line count.
     cache[count] = line;
     ++count;
 
@@ -165,7 +165,7 @@ bool Logger_c::_cacheLine(const char* qualifier, const char* format, va_list arg
 
 
 /**
- * Log the line and flush the buffer if full.
+ * Put the log entry in the cache. If this fills it, flush the cache.
  *
  * @param  qualifier - log entry qualifier, usually module name and log level.
  * @param  format - the log entry format string.
@@ -180,7 +180,7 @@ int Logger_c::_log(const char* qualifier, const char* format, va_list argptr)
         return -2;
     }
 
-//- Buffer the log line then flush the buffer if full.
+//- Cache the log entry then flush the cache if full.
     int ret = 0;
     if (_cacheLine(qualifier, format, argptr))
     {
@@ -214,7 +214,7 @@ Log_c::Log_c(const char* moduleName, int level) : logLevel{level}
 
 
 /**
- * Check logging level and send the line to the log if sufficiently impotant.
+ * Compare logging levels and cache the entry if sufficiently important.
  *
  * @param  level - the logging level for this log entry.
  * @param  format - the log entry format string, followed by parameters.
