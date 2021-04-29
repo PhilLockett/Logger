@@ -261,7 +261,7 @@ static void worker(const int count, const int level)
 static std::mutex displayMutex;
 
     std::stringstream id;
-    id << "Tread " << std::this_thread::get_id();
+    id << "Thread " << std::this_thread::get_id();
     Log_c threadLog(id.str().c_str(), level);
     if (IS_VERBOSE)
     {
