@@ -156,7 +156,7 @@ END_TEST
 
 extern int remoteFunction(int level = MAJOR);
 
-void checkFile(const std::vector<std::string> & comp, const std::string currentLogFileName, int targetCount)
+static void checkFile(const std::vector<std::string> & comp, const std::string currentLogFileName, int targetCount)
 {
     log.flush();
     std::vector<std::string> entries = fileToVector(currentLogFileName, targetCount);
@@ -318,7 +318,7 @@ END_TEST
  * @section launch the tests and check the results.
  */
 
-int runTests(void)
+static int runTests(void)
 {
     std::cout << "Executing all tests.\n";
 //    VERBOSE_OFF
