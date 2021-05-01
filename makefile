@@ -15,5 +15,13 @@ test:	$(objects)	$(headers)
 %.o:	%.cpp	$(headers)
 	g++ $(options) -c -o $@ $<
 
+format:
+	tfc -s -u -r Log_c.cpp
+	tfc -s -u -r Log_c.h
+	tfc -s -u -r test.cpp
+	tfc -s -u -r test2.cpp
+	tfc -s -u -r unittest.cpp
+	tfc -s -u -r unittest.h
+
 clean:
 	rm -f *.exe *.o
