@@ -4,6 +4,7 @@
 logs/
 speed/
 threads/
+TextFile.h
 unittest.*
 profile.txt
 results.txt

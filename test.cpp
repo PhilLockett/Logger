@@ -40,6 +40,7 @@
 
 #include "Log_c.h"
 
+#include "TextFile.h"
 #include "unittest.h"
 
 
@@ -99,28 +100,6 @@ static bool checkFileLineLength(const std::string & fileName, int length)
     return true;
 }
 
-static std::vector<std::string> fileToVector(const std::string & fileName, int reserve = 50)
-{
-//    std::cout << "fileToVector " << fileName << '\n';
-    std::ifstream infile(fileName, std::ifstream::in);
-    std::vector<std::string> ret;
-    if (!infile.is_open())
-        return ret;
-
-    ret.reserve(reserve);
-    std::string line;
-
-    while (getline(infile, line))
-    {
-        if (!infile.eof() && line.length())
-            ret.push_back(std::move(line));
-    }
-
-    infile.close();
-
-    return ret;
-}
-
 
 /**
  * @section test logging code.
@@ -156,12 +135,14 @@ END_TEST
 
 extern int remoteFunction(int level = MAJOR);
 
-static void checkFile(const std::vector<std::string> & comp, const std::string currentLogFileName, int targetCount)
+static void checkFile(const TextFile<> & comp, const std::string currentLogFileName, int targetCount)
 {
     log.flush();
-    std::vector<std::string> entries = fileToVector(currentLogFileName, targetCount);
+    TextFile<> entries{currentLogFileName};
+    entries.read(targetCount);
+
     REQUIRE(entries.size() == targetCount)
-    REQUIRE(std::equal(entries.begin(), entries.end(), comp.begin()))
+    REQUIRE(entries.equal(comp))
 }
 
 UNIT_TEST(test0, "Test sending log entries using global log reference.")
@@ -173,7 +154,8 @@ UNIT_TEST(test0, "Test sending log entries using global log reference.")
     log.enableTimestamp(false);
     const std::string currentLogFileName = log.getFullLogFileName();
 
-    std::vector<std::string> comp = fileToVector("expected-log.txt", 39);
+    TextFile<> comp{"expected-log.txt"};
+    comp.read(39);
     REQUIRE(comp.size() == 39);
 
     for (int loggingLevel = CRITICAL; loggingLevel < MAX; ++loggingLevel)
