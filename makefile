@@ -5,6 +5,7 @@ objects += Log_c.o
 objects += unittest.o
 
 headers  = Log_c.h
+headers += TextFile.h
 headers += unittest.h
 
 options = -std=c++20
