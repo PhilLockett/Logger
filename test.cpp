@@ -154,7 +154,7 @@ UNIT_TEST(test0, "Test sending log entries using global log reference.")
     log.enableTimestamp(false);
     const std::string currentLogFileName = log.getFullLogFileName();
 
-    TextFile<> comp{"expected-log.txt"};
+    TextFile<> comp{std::string{"expected-log.txt"}};
     comp.read(39);
     REQUIRE(comp.size() == 39);
 

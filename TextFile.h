@@ -35,13 +35,14 @@
  *
  */
 
-template<typename T=std::string>
+template<typename T=char>
 class TextFile
 {
 public:
-    using Iterator = std::vector<T>::const_iterator;
+    using Iterator = std::vector<std::basic_string<T>>::const_iterator;
 
     TextFile(const std::string & file) : fileName{file} {}
+    TextFile(const std::filesystem::path & file) : fileName{file} {}
     virtual ~TextFile(void) {}
 
     TextFile(const TextFile & other) : fileName{other.fileName}, data{other.data} {}
@@ -49,12 +50,13 @@ public:
 
     friend std::ostream & operator<<(std::ostream &os, const TextFile &A) { A.display(os); return os; }
 
-    void load(const std::vector<T> & other) { data = other; }
+    void load(const std::vector<std::basic_string<T>> & other) { data = other; }
     bool equal(const TextFile & other) const { return std::equal(data.begin(), data.end(), other.data.begin()); }
     void clear(void) { data.clear(); }
 
     void setFileName(const std::string & file) { fileName = file; }
-    std::string getFileName(void) const { return fileName; }
+    void setFileName(const std::filesystem::path & file) { fileName = file; }
+    std::string getFileName(void) const { return fileName.c_str(); }
     bool exists(void) const { return std::filesystem::exists(fileName); }
 
     void reserve(size_t size) { data.reserve(size); }
@@ -62,15 +64,14 @@ public:
     Iterator begin(void) { return data.begin(); }
     Iterator end(void) { return data.end(); }
 
-    int write(const std::vector<T> & other) { load(other); return write(); }
+    int write(const std::vector<std::basic_string<T>> & other) { load(other); return write(); }
     int write(void) const;
     int read(int reserve = 100);
 
 private:
-    void display(std::ostream &os) const;
+    std::filesystem::path fileName;
+    std::vector<std::basic_string<T>> data;
 
-    std::filesystem::path fileName; 
-    std::vector<T> data;
 };
 
 
@@ -87,9 +88,9 @@ private:
 template<typename T>
 int TextFile<T>::write(void) const
 {
-    if (std::ofstream os{fileName, std::ios::out})
+    if (std::basic_ofstream<T> os{fileName, std::ios::out})
     {
-        for (auto & line : data)
+        for (const auto & line : data)
             os << line << '\n';
 
         return 0;
@@ -107,13 +108,17 @@ int TextFile<T>::write(void) const
 template<typename T>
 int TextFile<T>::read(int res)
 {
-    if (std::ifstream is{fileName, std::ios::in})
+    const std::basic_string<T> tokens{T('\r'), T('\n'), T('\0')};
+    if (std::basic_ifstream<T> is{fileName, std::ios::in})
     {
         reserve(res);
-        T line;
+        std::basic_string<T> line;
 
         while (getline(is, line))
         {
+            const auto pos{line.find_first_of(tokens)};
+            if (pos != std::basic_string<T>::npos)
+                line = line.substr(0, pos);
             if (!is.eof() && line.length())
                 data.push_back(std::move(line));
         }
@@ -124,18 +129,6 @@ int TextFile<T>::read(int res)
     return 1;
 }
 
-
-/**
- * Send the current lines to the output stream.
- *
- * @param  os - Output stream.
- */
-template<typename T>
-void TextFile<T>::display(std::ostream &os) const
-{
-    for (const auto & line: data)
-        os << line << "\n";
-}
 
 #endif // !defined(_TEXTFILE_H__20210503_1300__INCLUDED_)
 
