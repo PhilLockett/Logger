@@ -135,19 +135,10 @@ END_TEST
 
 extern int remoteFunction(int level = MAJOR);
 
-static void checkFile(const TextFile<> & comp, const std::string currentLogFileName, int targetCount)
-{
-    log.flush();
-    TextFile<> entries{currentLogFileName};
-    entries.read(targetCount);
-
-    REQUIRE(entries.size() == targetCount)
-    REQUIRE(entries.equal(comp))
-}
-
 UNIT_TEST(test0, "Test sending log entries using global log reference.")
 
 //- Initialize test set up.
+    int targetCount{};
     const std::string path = "logs/";
     deleteDirectory(path);
     REQUIRE(log.setLogFilePath(path) == true)
@@ -161,7 +152,13 @@ UNIT_TEST(test0, "Test sending log entries using global log reference.")
     for (int loggingLevel = CRITICAL; loggingLevel < MAX; ++loggingLevel)
         log.printf(loggingLevel, "Logging level set to %d.", log.getLogLevel());
 
-    checkFile(comp, currentLogFileName, 3);
+    targetCount = 3;
+    log.flush();
+    TextFile<> entries{currentLogFileName};
+    entries.read(targetCount);
+
+    REQUIRE(entries.size() == targetCount)
+    REQUIRE(entries.equal(comp, targetCount))
 
 NEXT_CASE(test1, "Test sending log entries using local log reference.")
 
@@ -169,13 +166,25 @@ NEXT_CASE(test1, "Test sending log entries using local log reference.")
     for (int loggingLevel = CRITICAL; loggingLevel < MAX; ++loggingLevel)
         bob.printf(loggingLevel, "Logging level set to %d.", bob.getLogLevel());
 
-    checkFile(comp, currentLogFileName, 10);
+    targetCount = 10;
+    log.flush();
+    entries.clear();
+    entries.read(targetCount);
+
+    REQUIRE(entries.size() == targetCount)
+    REQUIRE(entries.equal(comp, targetCount))
 
 NEXT_CASE(test2, "Test sending log entries from remote code.")
 
     remoteFunction();   // Call test module.
 
-    checkFile(comp, currentLogFileName, 12);
+    targetCount = 12;
+    log.flush();
+    entries.clear();
+    entries.read(targetCount);
+
+    REQUIRE(entries.size() == targetCount)
+    REQUIRE(entries.equal(comp, targetCount))
 
 NEXT_CASE(test3, "Test changing logging level.")
 
@@ -183,7 +192,13 @@ NEXT_CASE(test3, "Test changing logging level.")
     for (int loggingLevel = 1; loggingLevel < Log_c::MAX_LOG_LEVEL; ++loggingLevel)
         log.printf(loggingLevel, "Logging level set to %d.", log.getLogLevel());
 
-    checkFile(comp, currentLogFileName, 18);
+    targetCount = 18;
+    log.flush();
+    entries.clear();
+    entries.read(targetCount);
+
+    REQUIRE(entries.size() == targetCount)
+    REQUIRE(entries.equal(comp, targetCount))
 
 NEXT_CASE(test4, "Test interleaving log entries.")
 
@@ -193,13 +208,25 @@ NEXT_CASE(test4, "Test interleaving log entries.")
         bob.printf(loggingLevel, "Logging level set to %d.", bob.getLogLevel());
     }
 
-    checkFile(comp, currentLogFileName, 31);
+    targetCount = 31;
+    log.flush();
+    entries.clear();
+    entries.read(targetCount);
+
+    REQUIRE(entries.size() == targetCount)
+    REQUIRE(entries.equal(comp, targetCount))
 
 NEXT_CASE(test5, "Test sending verbose log entries from remote code.")
 
     remoteFunction(VERBOSE);   // Call test module.
 
-    checkFile(comp, currentLogFileName, 39);
+    targetCount = 39;
+    log.flush();
+    entries.clear();
+    entries.read(targetCount);
+
+    REQUIRE(entries.size() == targetCount)
+    REQUIRE(entries.equal(comp, targetCount))
 
 END_TEST
 
