@@ -37,6 +37,7 @@
 #include <sstream>
 #include <filesystem>
 #include <vector>
+#include <thread>
 
 #include "Log_c.h"
 
@@ -120,7 +121,7 @@ static Log_c log(__FILE__, ERROR);     // Only log serious messages.
 
 UNIT_TEST(testDefault, "Test sending a log entry to default log file location.")
 
-    REQUIRE(log.printf(MAJOR, "Testing logging code.") == 0)
+    REQUIRE(log.logf(MAJOR, "Testing logging code.") == 0)
     log.flush();
 
     std::string currentLogFileName = log.getFullLogFileName();
@@ -150,7 +151,7 @@ UNIT_TEST(test0, "Test sending log entries using global log reference.")
     REQUIRE(comp.size() == 39);
 
     for (int loggingLevel = CRITICAL; loggingLevel < MAX; ++loggingLevel)
-        log.printf(loggingLevel, "Logging level set to %d.", log.getLogLevel());
+        log.logf(loggingLevel, "Logging level set to %d.", log.getLogLevel());
 
     targetCount = 3;
     log.flush();
@@ -164,7 +165,7 @@ NEXT_CASE(test1, "Test sending log entries using local log reference.")
 
     Log_c bob("Bob", DEBUG);    // Make Bob chatty.
     for (int loggingLevel = CRITICAL; loggingLevel < MAX; ++loggingLevel)
-        bob.printf(loggingLevel, "Logging level set to %d.", bob.getLogLevel());
+        bob.logf(loggingLevel, "Logging level set to %d.", bob.getLogLevel());
 
     targetCount = 10;
     log.flush();
@@ -190,7 +191,7 @@ NEXT_CASE(test3, "Test changing logging level.")
 
     log.setLogLevel(INFO);
     for (int loggingLevel = 1; loggingLevel < Log_c::MAX_LOG_LEVEL; ++loggingLevel)
-        log.printf(loggingLevel, "Logging level set to %d.", log.getLogLevel());
+        log.logf(loggingLevel, "Logging level set to %d.", log.getLogLevel());
 
     targetCount = 18;
     log.flush();
@@ -204,8 +205,8 @@ NEXT_CASE(test4, "Test interleaving log entries.")
 
     for (int loggingLevel = 1; loggingLevel < Log_c::MAX_LOG_LEVEL; ++loggingLevel)
     {
-        log.printf(loggingLevel, "Logging level set to %d.", log.getLogLevel());
-        bob.printf(loggingLevel, "Logging level set to %d.", bob.getLogLevel());
+        log.logf(loggingLevel, "Logging level set to %d.", log.getLogLevel());
+        bob.logf(loggingLevel, "Logging level set to %d.", bob.getLogLevel());
     }
 
     targetCount = 31;
@@ -248,10 +249,8 @@ UNIT_TEST(test6, "Test sending a large number of log entries.")
     log.setLogLevel(LEVEL);
 
     for (int i = 0; i < ENTRIES; ++i)
-    {
         for (int loggingLevel = CRITICAL; loggingLevel < MAX; ++loggingLevel)
-            log.printf(loggingLevel, "Logging level set to %d - adding log entry %d", log.getLogLevel(), i);
-    }
+            log.logf(loggingLevel, "Logging level set to %d - adding log entry %d", log.getLogLevel(), i);
 
     log.flush();
 
@@ -272,16 +271,17 @@ static std::mutex displayMutex;
     std::stringstream id;
     id << "Thread " << std::this_thread::get_id();
     Log_c threadLog(id.str().c_str(), level);
+
     if (IS_VERBOSE)
     {
         std::lock_guard<std::mutex> lock(displayMutex);
         std::cout << "\t" << id.str() << " working\n";
     }
+
     for (int i = 0; i < count; ++i)
-    {
         for (int loggingLevel = CRITICAL; loggingLevel < MAX; ++loggingLevel)
-            threadLog.printf(loggingLevel, "Entry %6d", i);
-    }
+            threadLog.logf(loggingLevel, "Entry %6d", i);
+
     if (IS_VERBOSE)
     {
         std::lock_guard<std::mutex> lock(displayMutex);

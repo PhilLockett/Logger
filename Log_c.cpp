@@ -219,23 +219,21 @@ Log_c::Log_c(const char* moduleName, int level) : logLevel{level}
  * @param  format - the log entry format string, followed by parameters.
  * @return negative error value or 0 if no errors.
  */
-int Log_c::printf(int level, const char* format, ...) const
+int Log_c::logf(int level, const char* format, ...) const
 {
-    if (level <= logLevel)
-    {
-        va_list argptr;
-        va_start(argptr, format);
-        char qualifier[MODULE_NAME_LEN+10];    // ugly
+    if (level > logLevel)
+        return -1;
 
-        //- Use the module name and logging level as qualifier.
-        sprintf(qualifier, "%s L%d -", module, level);
+    va_list argptr;
+    va_start(argptr, format);
+    char qualifier[MODULE_NAME_LEN+10];    // ugly
 
-        int ret = Logger_c::getInstance().log(qualifier, format, argptr);
+    //- Use the module name and logging level as qualifier.
+    sprintf(qualifier, "%s L%d -", module, level);
 
-        va_end(argptr);
+    int ret = Logger_c::getInstance().log(qualifier, format, argptr);
 
-        return ret;
-    }
+    va_end(argptr);
 
-    return -1;
+    return ret;
 }

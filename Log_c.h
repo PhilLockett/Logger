@@ -103,7 +103,7 @@ public:
 
     static bool isLogLevelValid(int level) { return (level >= 0) && (level <= MAX_LOG_LEVEL); }
 
-    int printf(int level, const char* format, ...) const;
+    int logf(int level, const char* format, ...) const;
     int flush(void) const { return Logger_c::getInstance().flush(); }
 
     int getLogLevel(void) const { return logLevel; }

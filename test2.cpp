@@ -44,7 +44,7 @@ int remoteFunction(int loggingLevel)
         log.setLogLevel(loggingLevel);
 
     for (int logEntryLevel = 1; logEntryLevel < Log_c::MAX_LOG_LEVEL; ++logEntryLevel)
-        log.printf(logEntryLevel, "Logging level set to %d.", log.getLogLevel());
+        log.logf(logEntryLevel, "Logging level set to %d.", log.getLogLevel());
 
     return 0;
 }
