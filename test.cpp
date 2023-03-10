@@ -337,11 +337,8 @@ static int runTests(void)
     RUN_TEST(test6)
     RUN_TEST(test7)
 
-    const int err = FINISHED;
-    if (err)
-        std::cerr << err << " ERROR(S) encountered!.\n";
-    else
-        std::cout << "All tests passed.\n";
+    const int err{FINISHED};
+    OUTPUT_SUMMARY;
 
     return err;
 }
