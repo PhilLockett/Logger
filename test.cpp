@@ -151,7 +151,7 @@ UNIT_TEST(test0, "Test sending log entries using global log reference.")
     REQUIRE(comp.size() == 39);
 
     for (int loggingLevel = CRITICAL; loggingLevel < MAX; ++loggingLevel)
-        log.logf(loggingLevel, "Logging level set to %d.", log.getLogLevel());
+        log.logf(loggingLevel, "Logging level set to %d for teet0.", log.getLogLevel());
 
     targetCount = 3;
     log.flush();
@@ -163,9 +163,9 @@ UNIT_TEST(test0, "Test sending log entries using global log reference.")
 
 NEXT_CASE(test1, "Test sending log entries using local log reference.")
 
-    Log_c test1Log("test1", DEBUG);    // Make test1 chatty.
+    Log_c test1Log("Test 1", DEBUG);    // Make test1 chatty.
     for (int loggingLevel = CRITICAL; loggingLevel < MAX; ++loggingLevel)
-        test1Log.logf(loggingLevel, "Logging level set to %d.", test1Log.getLogLevel());
+        test1Log.logf(loggingLevel, "Logging level set to %d for teet1.", test1Log.getLogLevel());
 
     targetCount = 10;
     log.flush();
@@ -191,7 +191,7 @@ NEXT_CASE(test3, "Test changing logging level.")
 
     log.setLogLevel(INFO);
     for (int loggingLevel = 1; loggingLevel < Log_c::MAX_LOG_LEVEL; ++loggingLevel)
-        log.logf(loggingLevel, "Logging level set to %d.", log.getLogLevel());
+        log.logf(loggingLevel, "Logging level set to %d for teet3.", log.getLogLevel());
 
     targetCount = 18;
     log.flush();
@@ -205,8 +205,8 @@ NEXT_CASE(test4, "Test interleaving log entries.")
 
     for (int loggingLevel = 1; loggingLevel < Log_c::MAX_LOG_LEVEL; ++loggingLevel)
     {
-        log.logf(loggingLevel, "Logging level set to %d.", log.getLogLevel());
-        test1Log.logf(loggingLevel, "Logging level set to %d.", test1Log.getLogLevel());
+        log.logf(loggingLevel, "Logging level set to %d for teet4.", log.getLogLevel());
+        test1Log.logf(loggingLevel, "Logging level set to %d for teet4.", test1Log.getLogLevel());
     }
 
     targetCount = 31;
