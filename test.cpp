@@ -163,9 +163,9 @@ UNIT_TEST(test0, "Test sending log entries using global log reference.")
 
 NEXT_CASE(test1, "Test sending log entries using local log reference.")
 
-    Log_c bob("Bob", DEBUG);    // Make Bob chatty.
+    Log_c test1Log("test1", DEBUG);    // Make test1 chatty.
     for (int loggingLevel = CRITICAL; loggingLevel < MAX; ++loggingLevel)
-        bob.logf(loggingLevel, "Logging level set to %d.", bob.getLogLevel());
+        test1Log.logf(loggingLevel, "Logging level set to %d.", test1Log.getLogLevel());
 
     targetCount = 10;
     log.flush();
@@ -206,7 +206,7 @@ NEXT_CASE(test4, "Test interleaving log entries.")
     for (int loggingLevel = 1; loggingLevel < Log_c::MAX_LOG_LEVEL; ++loggingLevel)
     {
         log.logf(loggingLevel, "Logging level set to %d.", log.getLogLevel());
-        bob.logf(loggingLevel, "Logging level set to %d.", bob.getLogLevel());
+        test1Log.logf(loggingLevel, "Logging level set to %d.", test1Log.getLogLevel());
     }
 
     targetCount = 31;
@@ -275,7 +275,7 @@ static std::mutex displayMutex;
     if (IS_VERBOSE)
     {
         std::lock_guard<std::mutex> lock(displayMutex);
-        std::cout << "\t" << id.str() << " working\n";
+        std::cout << "\t" << id.str() << " working" << std::endl;
     }
 
     for (int i = 0; i < count; ++i)
@@ -285,7 +285,7 @@ static std::mutex displayMutex;
     if (IS_VERBOSE)
     {
         std::lock_guard<std::mutex> lock(displayMutex);
-        std::cout << "\t" << id.str() << " finished\n";
+        std::cout << "\t" << id.str() << " finished" << std::endl;
     }
 }
 

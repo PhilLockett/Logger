@@ -57,7 +57,7 @@ public:
 
     bool setLogFilePath(const std::string & path) { std::lock_guard<std::mutex> lock(logMutex); return _setLogFilePath(path); }
     std::string getFullLogFileName(void) const  { std::lock_guard<std::mutex> lock(logMutex); return _getFullLogFileName(); }
-    const std::string & getLogFilePath(void) { std::lock_guard<std::mutex> lock(logMutex); return logFilePath; }
+    const std::string & getLogFilePath(void) const { std::lock_guard<std::mutex> lock(logMutex); return logFilePath; }
 
     void enableTimestamp(bool enable) { std::lock_guard<std::mutex> lock(logMutex); timestamp = enable; }
 
@@ -107,7 +107,7 @@ public:
     int flush(void) const { return Logger_c::getInstance().flush(); }
 
     int getLogLevel(void) const { return logLevel; }
-    void setLogLevel(int V) { logLevel = V; }
+    void setLogLevel(int V) { if (V < 0) logLevel = 0; else logLevel = (V > MAX_LOG_LEVEL) ? MAX_LOG_LEVEL : V; }
 
     std::string getFullLogFileName(void) const { return Logger_c::getInstance().getFullLogFileName(); }
     const std::string & getLogFilePath(void) const { return Logger_c::getInstance().getLogFilePath(); }
