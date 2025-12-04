@@ -2,6 +2,8 @@
 
 A simple logger implemented as a singleton.
 
+**USE AT OWN RISK.**
+
 ## Overview
 
 A logger collects together system wide messages, useful in a real time 
